@@ -96,6 +96,8 @@ public class UsuarioController {
         
         if (bindingResult.hasErrors()) {
             model.addAttribute("usuario", usuario);
+            model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+            model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
             return "form";
             
         }

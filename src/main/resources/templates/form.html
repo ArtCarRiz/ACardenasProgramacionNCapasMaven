@@ -120,7 +120,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <div class="row m-4">
 
                         <div class = "col-md-3"> 
-                            <select id="ddlpais" class="form-select">
+                            <select id="ddlpais" class="form-select" th:field="*{Direcciones[0].Colonia.Municipio.Estado.Pais.IdPais}">
                                 <option value= 0 selected> selecciona tu pais</option>
                                 <option th:each = "pais : ${paises}" th:value =" ${pais.IdPais}" th:text = "${pais.Nombre}"></option>
                             </select>
