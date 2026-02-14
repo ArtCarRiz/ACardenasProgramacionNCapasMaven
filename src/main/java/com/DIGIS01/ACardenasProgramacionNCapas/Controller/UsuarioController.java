@@ -1,0 +1,146 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.DIGIS01.ACardenasProgramacionNCapas.Controller;
+
+import com.DIGIS01.ACardenasProgramacionNCapas.DAO.ColoniaDAOImplementation;
+import com.DIGIS01.ACardenasProgramacionNCapas.DAO.EstadoDAOImplementation;
+import com.DIGIS01.ACardenasProgramacionNCapas.DAO.MunicipioDAOImplementation;
+import com.DIGIS01.ACardenasProgramacionNCapas.DAO.PaisDAOImplementation;
+import com.DIGIS01.ACardenasProgramacionNCapas.DAO.RolDAOImplementation;
+import com.DIGIS01.ACardenasProgramacionNCapas.DAO.UsuarioDAOImplementation;
+import com.DIGIS01.ACardenasProgramacionNCapas.ML.Estado;
+import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
+import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
+import jakarta.validation.Valid;
+import java.sql.CallableStatement;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+/**
+ *
+ * @author digis
+ */
+@Controller
+@RequestMapping("usuario")
+public class UsuarioController {
+
+    @Autowired
+    private UsuarioDAOImplementation usuarioDAOImplementation;
+
+    @Autowired
+    private PaisDAOImplementation paisDAOImplementation;
+
+    @Autowired
+    private RolDAOImplementation rolDAOImplementation;
+
+    @Autowired
+    private EstadoDAOImplementation estadoDAOImplementation;
+    
+    @Autowired
+    private MunicipioDAOImplementation municipioDAOImplementation;
+    
+    @Autowired
+    private ColoniaDAOImplementation coloniaDAOImplementation;
+
+    @GetMapping
+    public String Index(Model model) {
+//        List<Usuario> usuarios = new ArrayList<>();
+//        
+//        usuarios.add(new Usuario("Arturo", "Cardenas", "Rizo", new Date(), "7667675413", "arturo@gmail.com", "Magento", "Conraseña", "Ma", "7441121212", "CARA030303HGRRZRA3"));
+//        usuarios.add(new Usuario("Carlos", "Lopez", "Rizo",  new Date(), "7676451209", "acarlos@gmail.com", "api", "contra", "Ma", "7441580319", "CARA020202HGRR78AW"));
+//        
+//        model.addAttribute("usuarios", usuarios);
+//        return "usuario";
+
+        Result result = usuarioDAOImplementation.GetAll();
+        model.addAttribute("usuarios", result.objects);
+        return "usuario";
+
+    }
+
+//    @GetMapping("form")
+//    public String Accion(Model model) {
+//        return "Form";
+//    }
+    @GetMapping("form")
+    public String Accion(Model model) {
+        model.addAttribute("usuario", new Usuario());
+
+        Result resultPaises = paisDAOImplementation.GetAll();
+        model.addAttribute("paises", resultPaises.objects);
+
+        Result resultRol = rolDAOImplementation.GetAll();
+        model.addAttribute("roles", resultRol.objects);
+
+        return "Form";
+    }
+
+    @PostMapping("form")                                                    //del model vienen todas las modificaciones
+    public String Accion(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, Model model) {
+        
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("usuario", usuario);
+            return "form";
+            
+        }
+        
+        return "redirect:/usuario";
+    }
+
+    @GetMapping("/GetById/IdUsuario")
+    public String GetById(@RequestParam int IdUsuario, Model model) {
+
+        Result result = usuarioDAOImplementation.GetById(IdUsuario);
+
+        model.addAttribute("usuario", result.object);
+        return "usuario";
+    }
+
+    @GetMapping("getEstadosByPais/{IdPais}")
+    @ResponseBody //retorna un json y no una vista
+    public Result GetEstadosByIdPais(@PathVariable("IdPais") int IdPais) {
+
+        Result result = estadoDAOImplementation.GetAll(IdPais);
+
+        result.correct = true;
+        return result;
+    }
+
+    
+    @GetMapping("getMunicipioByEstado/{IdEstado}")
+    @ResponseBody //
+    public Result GetMunicipioByEstado(@PathVariable("IdEstado") int IdEstado) {
+
+        Result result = municipioDAOImplementation.GetAll(IdEstado);
+
+        result.correct = true;
+        return result;
+    }
+    
+    @GetMapping("getColoniaByMunicipio/{IdMunicipio}")
+    @ResponseBody //
+    public Result GetColoniaByMunicipio(@PathVariable("IdMunicipio") int IdMunicipio ){
+        
+        Result result = coloniaDAOImplementation.GetAll(IdMunicipio);
+        
+        result.correct = true;
+        return  result;
+    }
+
+}

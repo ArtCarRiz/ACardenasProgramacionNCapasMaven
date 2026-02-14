@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>j</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    </head>
+    <body>
+
+
+
+        <div class="container">
+
+            <div>
+                <div class="row m-2">
+
+                    <div class="col-md-4">
+                        <h2 class="fw-bold">Informacion del usuario: </h2>
+                        <div></div>
+
+
+                    </div>
+
+                </div>
+
+                <div class="row m-2">
+
+                    <div class="col-md-4">
+                        <p>Para agregar un usuario presionar el boton</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <button class="btn btn-primary">Agregar usuario</button>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="cl-sm table-responsive">
+
+                <table class="table table-striped border border-primary">
+                    <thead>
+                        <tr class="text-start">
+                            <th>Datos personales</th>
+                            <th>Info de contacto</th>
+                            <th>Direccion</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-start">
+
+                    <br/><!-- comment -->
+
+                    <a class="btn btn-primary" th:href="@{usuario/form}">Agregar</a>
+
+                    <br/>
+
+                    <tr th:each="usuario : ${usuarios}">
+
+
+                        <td style="white-space: pre-line;" th:text="|Nombre: ${usuario.nombre} ${usuario.apellidoPaterno}  ${usuario.ApellidoMaterno}
+                            FechaNacimiento: ${usuario.FechaNacimiento}
+                            Sexo: ${usuario.Sexo}|"></td>
+                        
+                        <td th:each="rol : ${usuario.rol}"  style="white-space: pre-line;" th:text="|Email: ${usuario.email} 
+                            Telefono: ${usuario.telefono} 
+                            Celular: ${usuario.celular}
+                            Nombre de usuario: ${usuario.username}
+                            Rol: ${rol.NombreRol}|"></td>
+                        <td > 
+                    <li style="white-space: pre-line;" th:each="direccion : ${usuario.Direcciones}" th:text="|Colonia: ${direccion.colonia.nombre}
+                        Calle: ${direccion.Calle}   
+                        Numero ext: ${direccion.NumeroExterior}|">
+                    </li>
+                    </td>
+
+                    <td>                        
+                        <a class="btn btn-warning" th:href="@{/usuario/form}"><i class="bi bi-pencil-square"></i></a>
+                        <button class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                    </td>
+                    </tr>
+
+
+                    <!--                    
+                                        <tr th:each="direccion : ${usuario.direcciones}">
+                                            
+                                            
+                                            <td th:text="|${dierccion.Calle}|"></td>
+                                            
+                                            
+                                            <td>
+                                                <button class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
+                                                <button class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                                            </td>
+                                        </tr>-->
+
+
+
+                    <!--                        <tr>
+                                                <td>Arturo Cárdenas Rizo <br> 03/03/03 <br> Ma</td>
+                                                <td> arturo.c.rizo10@gmail.com <br> 7441580319 <br> Celular</td>
+                                                <td>Magenta <br> 1234 <br> 1 (rol)</td>
+                                                <td>CARA030303HGRRZRA3</td>
+                                                <td>
+                                                    <button class="btn btn-outline-light"><i class="bi bi-gear-fill"></i></button>
+                                                    <button class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i></i></button>
+                                                </td>
+                                            </tr>
+                    
+                                             <tr>
+                                                <td>Arturo Cárdenas Rizo <br> 03/03/03 <br> Ma</td>
+                                                <td> arturo.c.rizo10@gmail.com <br> 7441580319 <br> Celular</td>
+                                                <td>Magenta <br> 1234 <br> 1 (rol)</td>
+                                                <td>CARA030303HGRRZRA3</td>
+                                                <td>
+                                                    <button class="btn btn-outline-light"><i class="bi bi-gear-fill"></i></button>
+                                                    <button class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i></i></button>
+                                                </td>
+                                            </tr>
+                                             <tr>
+                                                <td>Arturo Cárdenas Rizo <br> 03/03/03 <br> Ma</td>
+                                                <td> arturo.c.rizo10@gmail.com <br> 7441580319 <br> Celular</td>
+                                                <td>Magenta <br> 1234 <br> 1 (rol)</td>
+                                                <td>CARA030303HGRRZRA3</td>
+                                                <td>
+                                                    <button class="btn btn-outline-light"><i class="bi bi-gear-fill"></i></button>
+                                                    <button class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i></i></button>
+                                                </td>
+                                            </tr>-->
+
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </body>
+</html>
