@@ -38,4 +38,14 @@ public class Estado {
         return Nombre;
     }
 
+    public Pais getPais() {
+        return pais;
+    }
+
+    public void setPais(Pais pais) {
+        this.pais = pais;
+    }
+    
+    
+
 }

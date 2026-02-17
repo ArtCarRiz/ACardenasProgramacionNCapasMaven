@@ -10,12 +10,15 @@ import com.DIGIS01.ACardenasProgramacionNCapas.DAO.MunicipioDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.PaisDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.RolDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.UsuarioDAOImplementation;
+import com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Estado;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
 import jakarta.validation.Valid;
+import java.io.File;
 import java.sql.CallableStatement;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +32,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+//import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -51,10 +58,10 @@ public class UsuarioController {
 
     @Autowired
     private EstadoDAOImplementation estadoDAOImplementation;
-    
+
     @Autowired
     private MunicipioDAOImplementation municipioDAOImplementation;
-    
+
     @Autowired
     private ColoniaDAOImplementation coloniaDAOImplementation;
 
@@ -92,16 +99,58 @@ public class UsuarioController {
     }
 
     @PostMapping("form")                                                    //del model vienen todas las modificaciones
-    public String Accion(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, Model model) {
-        
+    public String Accion(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @RequestParam("imagenFile") MultipartFile imagenFile, Model model) {
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("usuario", usuario);
             model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
             model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
-            return "form";
-            
+
+            if (true) {
+                                
+                usuario.Direcciones.get(0).colonia.municipio.estado.getIdEstado(); ///esto esta bien
+                
+                return "form";
+            }
         }
-        
+
+        //imagen
+        String nombreArchivo = imagenFile.getOriginalFilename();
+        System.out.println(nombreArchivo);
+        String[] cadena = nombreArchivo.split("\\.");
+        if (cadena[1].equals("jpg") || cadena[1].equals("png")) {
+            //convierto imagen a base 64, y la cargo en el modelo alumno 
+            System.out.println("Imagen");
+
+            //Leer bytes de la imagen
+            Result result = new Result();
+            try {
+                byte[] fileContent = nombreArchivo.getBytes();
+
+                //Codificar a Base64
+                String encodedString = Base64.getEncoder().encodeToString(fileContent);
+                
+                usuario.setImagen(encodedString);
+                
+                System.out.println(encodedString);
+
+            } catch (Exception e) {
+                result.correct = true;
+                result.errorMessage = e.getLocalizedMessage();
+                result.ex = e;
+            }
+
+//        } else if (imagenFile != null) {
+//            //retorno error de archivo no permititido y regreso a formulario 
+//            System.out.println("Error");
+//            return "form";
+        }else if(imagenFile != null){
+            return "form";
+        }
+        //proceso de agregar datos y retorno a vista de todos los usuarios
+        System.out.println("Agregar datos e imagen");
+        model.addAttribute("usuario", usuario);
+//        usuarioDAOImplementation.add(usuario)    cuando tengas el ADD en DAO descomenta
         return "redirect:/usuario";
     }
 
@@ -124,7 +173,6 @@ public class UsuarioController {
         return result;
     }
 
-    
     @GetMapping("getMunicipioByEstado/{IdEstado}")
     @ResponseBody //
     public Result GetMunicipioByEstado(@PathVariable("IdEstado") int IdEstado) {
@@ -134,15 +182,15 @@ public class UsuarioController {
         result.correct = true;
         return result;
     }
-    
+
     @GetMapping("getColoniaByMunicipio/{IdMunicipio}")
     @ResponseBody //
-    public Result GetColoniaByMunicipio(@PathVariable("IdMunicipio") int IdMunicipio ){
-        
+    public Result GetColoniaByMunicipio(@PathVariable("IdMunicipio") int IdMunicipio) {
+
         Result result = coloniaDAOImplementation.GetAll(IdMunicipio);
-        
+
         result.correct = true;
-        return  result;
+        return result;
     }
 
 }

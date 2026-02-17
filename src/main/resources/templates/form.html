@@ -26,7 +26,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
 
             <div>
-                <form method="post" th:object="${usuario}" th:action="@{/usuario/form}">
+                <form method="post" th:object="${usuario}" th:action="@{/usuario/form}" enctype="multipart/form-data">
                     <div class="row m-4">
                         <div class="col-md-2">
                             <input id="NombreUsuario" type="text" pattern="[A-Za-z]+" class="form-control" placeholder="Nombre" th:field="*{Nombre}" >
@@ -100,11 +100,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <span class="text-danger" th:if="${#fields.hasErrors('Curp')}" th:errors = "*{Curp}"></span>
                         </div>
                         <div class="col-md-3">
-                            <select class="form-select" th:field="*{Rol}">
-                                <option value=""  >Selecciona tu rol</option>
+                            <select class="form-select" th:field="*{Rol.IdRol}">
+                                <option value="0"  >Selecciona tu rol</option>
                                 <option th:each="rol : ${roles}" th:value = "${rol.IdRol}" th:text = "${rol.NombreRol}" ></option>                
                             </select>
-                            <span class="text-danger" th:if="${#fields.hasErrors('Rol')}" th:errors = "*{Rol}"></span>
+                            <span class="text-danger" th:if="${#fields.hasErrors('Rol.IdRol')}" th:errors = "*{Rol.IdRol}"></span>
                         </div>
 
                         <!--                        <div class = "col-md-3"> 
@@ -120,7 +120,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <div class="row m-4">
 
                         <div class = "col-md-3"> 
-                            <select id="ddlpais" class="form-select" th:field="*{Direcciones[0].Colonia.Municipio.Estado.Pais.IdPais}">
+                            <select id="ddlpais" class="form-select" th:field="*{Direcciones[0].colonia.municipio.estado.pais.IdPais}">
                                 <option value= 0 selected> selecciona tu pais</option>
                                 <option th:each = "pais : ${paises}" th:value =" ${pais.IdPais}" th:text = "${pais.Nombre}"></option>
                             </select>
@@ -152,12 +152,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <div class="col-md-2">
                             <input id="codigopostal" class="form-control" placeholder="Codigo Postal">
                         </div>
-                        
+
                         <div class="col-md-2">
                             <input id="calle" class="form-control" placeholder="Calle" >
                         </div>
                     </div>
 
+                    <div class="row m-4">
+                        <div class="col-md-4 text-center d-flex flex-column align-items-center">
+                            <div class="card p-3 w-100 h-100">
+                                <label class="form-label fw-bold">Imagen</label>
+                                <input type="file" class="form-control mb-2" name="imagenFile" id="imagenFile"  >
+                                <img id="previewImage" style="max-width: 300px; max-height: auto" class="mx-auto" src=""/>
+                            </div>
+                        </div>
+                    </div>
 
 
                     <div class = "row m-4">

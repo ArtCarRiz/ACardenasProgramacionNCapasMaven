@@ -56,6 +56,8 @@ public class Usuario {
     
     @Pattern(regexp = "^([A-Z][AEIOUX][A-Z]{2}\\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\\d])(\\d)$", message = "Formato invalido")
     private String Curp;
+    
+    public String Imagen;
 
     @Valid
     @NotEmpty(message = "No puede estar vacio")
@@ -67,7 +69,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String Nombre, String ApellidoPaterno, String ApellidoMaterno, Date FechaNacimiento, String Telefono, String Email, String Username, String Password, String Sexo, String Celular, String Curp) {
+    public Usuario(String Nombre, String ApellidoPaterno, String ApellidoMaterno, Date FechaNacimiento, String Telefono, String Email, String Username, String Password, String Sexo, String Celular, String Curp, String Imagen) {
         this.Nombre = Nombre;
         this.ApellidoPaterno = ApellidoPaterno;
         this.ApellidoMaterno = ApellidoMaterno;
@@ -79,6 +81,7 @@ public class Usuario {
         this.Sexo = Sexo;
         this.Celular = Celular;
         this.Curp = Curp;
+        this.Imagen = Imagen;
     }
 
 //    public List<ML.Direccion> Direcciones;
@@ -177,6 +180,15 @@ public class Usuario {
     public String getCurp() {
         return Curp;
     }
+
+    public String getImagen() {
+        return Imagen;
+    }
+
+    public void setImagen(String Imagen) {
+        this.Imagen = Imagen;
+    }
+    
 
     public void setRol(Rol rol) {
         this.Rol = rol;

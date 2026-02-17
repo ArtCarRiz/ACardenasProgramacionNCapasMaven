@@ -31,4 +31,14 @@ public class Municipio {
         return Nombre;
     }
 
+    public Estado getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
+    
+    
+
 }

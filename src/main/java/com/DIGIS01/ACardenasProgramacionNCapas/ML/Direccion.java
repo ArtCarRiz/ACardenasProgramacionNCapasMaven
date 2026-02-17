@@ -61,6 +61,14 @@ public class Direccion {
     public String getNumeroExterior(){
         return NumeroExterior;
     }
+
+    public Colonia getColonia() {
+        return colonia;
+    }
+
+    public void setColonia(Colonia colonia) {
+        this.colonia = colonia;
+    }
     
     
 

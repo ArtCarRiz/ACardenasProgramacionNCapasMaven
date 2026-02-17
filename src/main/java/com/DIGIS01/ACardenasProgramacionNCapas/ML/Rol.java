@@ -5,16 +5,18 @@
 package com.DIGIS01.ACardenasProgramacionNCapas.ML;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  *
  * @author digis
  */
 public class Rol {
-    
+    @Min(1)
     private int IdRol;
-    @NotEmpty(message = "No puedo ser vacio")
     private String NombreRol;
     
     public void setIdRol(int IdRol){

@@ -54,4 +54,14 @@ public class Colonia {
         return CodigoPostal;
     }
 
+    public Municipio getMunicipio() {
+        return municipio;
+    }
+
+    public void setMunicipio(Municipio municipio) {
+        this.municipio = municipio;
+    }
+    
+    
+
 }
