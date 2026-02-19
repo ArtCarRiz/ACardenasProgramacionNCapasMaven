@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  *
@@ -175,21 +176,72 @@ public class UsuarioController {
         return "redirect:/usuario";
     }
 
+    @GetMapping("/delete/{IdUsuario}")
+    public String DeteleUsuario(@PathVariable("IdUsuario") int identificador, RedirectAttributes redirectAttributes) {
+        Result result = new Result();
+
+        result = usuarioDAOImplementation.DeteleUsuario(identificador);
+        if (result.correct == true) {
+            System.out.println("Borrado con exito");
+            redirectAttributes.addFlashAttribute("mensaje", "¡Producto creado exitosamente!");
+            return "redirect:/usuario";
+        } else {
+            System.out.println("NO fue borrado");
+            return "redirect:/usuario";
+        }
+
+    }
+
+    @PostMapping("") //a donde lo dirigo?
+    public String UpdateUsuario(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, Model model) {
+        Result result = new Result();
+
+        try {
+
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("usuario", usuario);
+                model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+                model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+
+                //guardo en variables los id
+                int idPais = usuario.Direcciones.get(0).colonia.municipio.estado.pais.getIdPais();
+                int idEstado = usuario.Direcciones.get(0).colonia.municipio.estado.getIdEstado();
+                int idMunicipio = usuario.Direcciones.get(0).colonia.municipio.getIdMunicipio();
+                int idColonia = usuario.Direcciones.get(0).colonia.getIdColonia();
+
+                if (idEstado != 0) {
+                    //guardo el valor
+                    model.addAttribute("estados", estadoDAOImplementation.GetAll(idPais).objects);
+                    if (idMunicipio != 0) {
+                        //guardo el valor
+                        model.addAttribute("municipios", municipioDAOImplementation.GetAll(idEstado).objects);
+                        if (idColonia != 0) {
+                            //guardo el valor
+                            model.addAttribute("colonias", coloniaDAOImplementation.GetAll(idMunicipio).objects);
+
+                        }
+                    }
+
+                }
+                return "usuario";
+            }
+
+            result = usuarioDAOImplementation.UpdateUsuario(usuario);
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return "usuario";
+    }
+
     @GetMapping("/GetById/IdUsuario")
     public String GetById(@RequestParam int IdUsuario, Model model) {
 
         Result result = usuarioDAOImplementation.GetById(IdUsuario);
 
         model.addAttribute("usuario", result.object);
-        return "usuario";
-    }
-
-    @GetMapping("/delete/IdUsuario")
-    public String DeteleUsuario(@RequestParam int IdUsuario, Model model) {
-
-        Result result = usuarioDAOImplementation.DeteleUsuario(IdUsuario);
-        model.addAttribute("usuario", result.object);
-        
         return "usuario";
     }
 

@@ -8,6 +8,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <body>
 
@@ -36,7 +37,11 @@
                     <div class="col-md-3">
                         <br/><!-- comment -->
 
-                        <a class="btn btn-primary" th:href="@{usuario/form}">Agregar un nuevo usuario</a>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Agregar" >
+                            Agregar nuevo usuario
+                        </button>
+
+                        <!--                        <a class="btn btn-primary" th:href="@{usuario/form}">Agregar un nuevo usuario</a>-->
 
                         <br/>
                     </div>
@@ -66,17 +71,18 @@
 
                             <td>
                                 <span style="white-space: pre-line;" th:text="|Nombre: ${usuario.nombre} ${usuario.apellidoPaterno}  ${usuario.ApellidoMaterno}
-                                 FechaNacimiento: ${usuario.FechaNacimiento}
-                                 Sexo: ${usuario.Sexo}|"></span>
+                                      FechaNacimiento: ${usuario.FechaNacimiento}
+                                      Sexo: ${usuario.Sexo}|"></span>
                                 <br>
-                                <img th:src="@{'data:image/png;base64,' + ${usuario.imagen}}" alt="Imagen" style="width: 100px" onerror="this.onerror=null; this.outerHTML='<a href=\'https://m.media-amazon.com/images/I/61yF9ssd-3L._AC_UF894,1000_QL80_.jpg\'>Imagen no disponible</a>';"/>
+                                <img th:src="@{'data:image/png;base64,' + ${usuario.imagen}}" alt="Imagen" style="width: 100px"  onerror="this.onerror=null; this.outerHTML='<a href=\'https://m.media-amazon.com/images/I/61yF9ssd-3L._AC_UF894,1000_QL80_.jpg\'>Imagen no disponible</a>';"/>
                             </td>
 
                             <td th:each="rol : ${usuario.rol}"  style="white-space: pre-line;" th:text="|Email: ${usuario.email} 
                                 Telefono: ${usuario.telefono} 
                                 Celular: ${usuario.celular}
                                 Nombre de usuario: ${usuario.username}
-                                Rol: ${rol.NombreRol}|"></td>
+                                Rol: ${rol.NombreRol}|">
+                            </td>
                             <td> 
                     <li style="white-space: pre-line;" th:each="direccion : ${usuario.Direcciones}" th:text="|Colonia: ${direccion.colonia.nombre}
                         Calle: ${direccion.Calle}   
@@ -85,43 +91,65 @@
                     </td>
 
                     <td>                        
-                        <a class="btn btn-warning" th:href="@{/usuario/form}"><i class="bi bi-pencil-square"></i></a>
+                        <a th:href="@{/usuario/form}" class="btn btn-warning"><i class="bi bi-pencil-square"></i></a>
+                        <a th:href="@{/usuario/delete/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-danger"><i class="bi bi-trash-fill"></i></a>
 
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#eliminar"><i class="bi bi-trash-fill"></i></button>
                     </td>
                     </tr>
 
                     </tbody>
                 </table>
 
-            </div>
 
-            <div class="modal fade" id="eliminar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Eliminar usuario</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body" >
 
-                            <form method="post" th:object="${usuario}" th:action="@{/usuario/delete}">
-                                Informacion basica del usuario
-                                <input type="hidden" th:field="*{usuarios.IdUsuario}" />
-                                <input type="text" th:field="*{usuarios.Nombre}" />
-                            </form>
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <a class="btn btn-primary">Eliminar Usuario</a>
-                            <!--                        <button type="button" class="btn btn-primary">Confirmar</button>-->
-                        </div>
-                    </div>
-                </div>
             </div>
 
         </div>
-
     </body>
+
+    <div class="modal fade" id="Agregar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Editar informacion</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" >
+
+                    <form method="post" th:object="${usuario}" th:action="@{/usuario/form}" enctype="multipart/form-data">
+                        <input type="hidden" th:field="*{usuario.IdUsuario}" />
+                        <p th:text="${usuario.Nombre}">Nombre</p>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-primary">Editar Usuario</a>
+                    <button type="button" class="btn btn-primary">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:if= "${mensaje != null}"  th:inline="javascript">
+        Swal.fire({
+            title: "¿Seguro de eliminar?",
+            text: "No vas a poder devolver este usuario",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Borrado",
+                    text: "EL usuario a sido borrado",
+                    icon: "success"
+                });
+            }
+        });
+    </script>
+
+
 </html>

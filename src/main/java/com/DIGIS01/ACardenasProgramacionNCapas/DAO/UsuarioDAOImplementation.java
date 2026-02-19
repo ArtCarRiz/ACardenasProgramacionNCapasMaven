@@ -259,9 +259,6 @@ public class UsuarioDAOImplementation implements IUsuario {
                 callableStatement.setString(2, usuario.getApellidoPaterno());
                 callableStatement.setString(3, usuario.getApellidoMaterno());
 
-                SimpleDateFormat formatoOracle = new SimpleDateFormat("dd/MM/yyyy");
-                formatoOracle.format(usuario.getFechaNacimiento().getTime());
-
                 callableStatement.setDate(4, new java.sql.Date(usuario.getFechaNacimiento().getTime()));
                 System.out.println(usuario.getFechaNacimiento());
                 System.out.println(usuario.getFechaNacimiento().getTime());
@@ -298,7 +295,7 @@ public class UsuarioDAOImplementation implements IUsuario {
     }
 
     @Override
-    public Result DeteleUsuario (int identificador) {
+    public Result DeteleUsuario(int identificador) {
         Result result = new Result();
 
         try {
@@ -307,13 +304,52 @@ public class UsuarioDAOImplementation implements IUsuario {
 
                 callableStatement.setInt(1, identificador);
                 int rowAffect = callableStatement.executeUpdate();
-                
+
                 if (rowAffect != 0) {
                     result.correct = true;
-                }else{
+                } else {
                     System.out.println("El delete no se concreto");
                     result.correct = false;
                 }
+
+                return true;
+            });
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
+    public Result UpdateUsuario(Usuario usuario) {
+        Result result = new Result();
+
+        try {
+
+            jdbcTemplate.execute("{CALL UsuarioUpdateSP(?,?,?,?,?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
+
+                callableStatement.setString(1, usuario.getNombre());
+                callableStatement.setString(2, usuario.getApellidoPaterno());
+                callableStatement.setString(3, usuario.getApellidoMaterno());
+                callableStatement.setDate(4, new java.sql.Date(usuario.getFechaNacimiento().getTime()));
+                callableStatement.setString(5, usuario.getTelefono());
+                callableStatement.setString(6, usuario.getEmail());
+                callableStatement.setString(7, usuario.getUsername());
+                callableStatement.setString(8, usuario.getPassword());
+                callableStatement.setString(9, usuario.getSexo());
+                callableStatement.setString(10, usuario.getCelular());
+                callableStatement.setString(11, usuario.getCurp());
+                callableStatement.setInt(12, usuario.Rol.getIdRol());
+                callableStatement.setInt(13, usuario.getIdUsuario());
+                
+                int rowAffectted = 0;
+                rowAffectted = callableStatement.executeUpdate();
+                
+                result.correct = rowAffectted != 0 ? true : false;
 
                 return true;
             });
