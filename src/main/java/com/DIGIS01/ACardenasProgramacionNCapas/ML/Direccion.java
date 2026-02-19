@@ -17,19 +17,18 @@ public class Direccion {
     public com.DIGIS01.ACardenasProgramacionNCapas.ML.Colonia colonia;
 //    public ML.Colonia colonia;
 
-//    public Direccion() {
-//    }
-//
-//    public Direccion(int IdDireccion, String Calle, String NumeroInterior, String NumeroExterior) {
-//        this.IdDireccion = IdDireccion;
-//        this.Calle = Calle;
-//        this.NumeroInterior = NumeroInterior;
-//        this.NumeroExterior = NumeroExterior;
-//    }
     
-    
-    
+    public Direccion(){
+        
+    }
 
+    public Direccion(int IdDireccion, String Calle, String NumeroInterior, String NumeroExterior) {
+        this.IdDireccion = IdDireccion;
+        this.Calle = Calle;
+        this.NumeroInterior = NumeroInterior;
+        this.NumeroExterior = NumeroExterior;
+    }
+    
     public void setIdDireccion(int IdDireccion) {
         this.IdDireccion = IdDireccion;
     }

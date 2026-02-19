@@ -46,7 +46,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         </div>
                         <div class="col-md-2">
                             <input id="FechaNacimiento" type="date" class="form-control" placeholder="Calendario provisional" th:field="*{FechaNacimiento}" >
-                            <!--                            <span id="errorFechaNacimiento" style="color: red"></span>-->
                             <span class="text-danger" th:if="${#fields.hasErrors('FechaNacimiento')}" th:errors = "*{FechaNacimiento}"></span>
 
                         </div>
@@ -84,10 +83,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <div class="row m-4"> <!-- aqui empieza la tercer fila --> 
                         <div class="col-md-2">
                             <div >
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Hombre" th:field="*{Sexo}">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Ma" th:field="*{Sexo}">
                                 <label class="form-check-label" for="flexRadioDefault1">Hombre</label>
 
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Mujer" th:field="*{Sexo}">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Fe" th:field="*{Sexo}">
                                 <label class="form-check-label" for="flexRadioDefault2">Mujer</label>
 
                             </div>
@@ -127,23 +126,23 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         </div>
 
                         <div class = "col-md-3"> 
-                            <select id="ddlestado" class="form-select">
+                            <select id="ddlestado" class="form-select" th:field = "*{Direcciones[0].colonia.municipio.estado.IdEstado}">
                                 <option  value="0" selected> selecciona tu Estado</option>
-                                <!--                                <option th:each = "pais : ${paises}" th:value =" ${pais.IdPais}" th:text = "${pais.Nombre}"></option>-->
+                                <option th:each = "estado : ${estados}" th:value =" ${estado.IdEstado}" th:text = "${estado.Nombre}"></option>
                             </select>
                         </div>
 
                         <div class = "col-md-3"> 
-                            <select id="ddlmunicipio" class="form-select">
+                            <select id="ddlmunicipio" class="form-select" th:field = "*{Direcciones[0].colonia.municipio.IdMunicipio}">
                                 <option  value="0" selected> selecciona tu Municipio</option>
-                                <!--                                <option th:each = "pais : ${paises}" th:value =" ${pais.IdPais}" th:text = "${pais.Nombre}"></option>-->
+                                <option th:each = "municipio : ${municipios}" th:value =" ${municipio.IdMunicipio}" th:text = "${municipio.Nombre}"></option>                                
                             </select>
                         </div>
 
                         <div class = "col-md-3"> 
-                            <select id="ddlcolonia" class="form-select">
+                            <select id="ddlcolonia" class="form-select" th:field = "*{Direcciones[0].colonia.IdColonia}">
                                 <option  value="0"  data-cp-id selected> selecciona tu Colonia</option>
-                                <!--                                <option th:each = "pais : ${paises}" th:value =" ${pais.IdPais}" th:text = "${pais.Nombre}"></option>-->
+                                <option th:each = "colonia : ${colonias}" th:value =" ${colonia.IdColonia}" th:text = "${colonia.Nombre}"></option>                                
                             </select>
                         </div>
 
@@ -153,8 +152,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <input id="codigopostal" class="form-control" placeholder="Codigo Postal">
                         </div>
 
-                        <div class="col-md-2">
-                            <input id="calle" class="form-control" placeholder="Calle" >
+                        <div class="col-md-2">                                                          
+                            <input id="calle" class="form-control" placeholder="Calle" th:field = "*{Direcciones[0].Calle}">
+                            
+                        </div>
+                        
+                        <div class="col-md-2">                                                          
+                            <input id="numexterior" class="form-control" placeholder="numexterior" th:field = "*{Direcciones[0].NumeroExterior}">
+                            
+                        </div>
+                        
+                        <div class="col-md-2">                                                          
+                            <input id="numinterior" class="form-control" placeholder="numinterior" th:field = "*{Direcciones[0].NumeroInterior}">
+                            
                         </div>
                     </div>
 
@@ -163,7 +173,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <div class="card p-3 w-100 h-100">
                                 <label class="form-label fw-bold">Imagen</label>
                                 <input type="file" class="form-control mb-2" name="imagenFile" id="imagenFile"  >
-                                <img id="previewImage" style="max-width: 300px; max-height: auto" class="mx-auto" src=""/>
+                                <img id="previewImage" style="max-width: 300px; max-height: auto" class="mx-auto" src="#"/>
                             </div>
                         </div>
                     </div>
@@ -195,6 +205,27 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
         </div>
     </body>
+
+    <script>
+        // JavaScript
+        const input = document.getElementById('imagenFile');
+        const preview = document.getElementById('previewImage');
+
+        input.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                // Crea una URL temporal del archivo seleccionado
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block'; // Muestra la imagen
+                }
+
+                reader.readAsDataURL(file); // Lee el archivo
+            }
+        });
+    </script>
 
     <script>
 
@@ -326,7 +357,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             $("#ddlestado").empty();
                             $("#ddlestado").append("<option value= 0 selected> selecciona tu estado</option>");
                             $.each(data.objects, function (i, estado) {
-                                console.log(estado.Nombre);
+//                                console.log(estado.Nombre);
                                 $("#ddlestado").append("<option value=" + estado.IdEstado + ">" + estado.Nombre + "</option>");
                             });
                         },
@@ -404,8 +435,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             $("#ddlcolonia").empty();
                             $("#ddlcolonia").append("<option value= 0 selected> selecciona tu colonia</option>");
                             $.each(data.objects, function (i, colonia) {
-                                console.log(colonia.Nombre);
-                                console.log(colonia.CodigoPostal);
+//                                console.log(colonia.Nombre);
+//                                console.log(colonia.CodigoPostal);
 
                                 $("#ddlcolonia").append("<option value=" + colonia.IdColonia + " data-cp=" + colonia.CodigoPostal + ">" + colonia.Nombre + "</option>");
 

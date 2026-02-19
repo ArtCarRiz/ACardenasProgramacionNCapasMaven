@@ -5,9 +5,12 @@
 package com.DIGIS01.ACardenasProgramacionNCapas.DAO;
 
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
+import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
 
 public interface IUsuario {
     
     Result GetAll();
     Result GetById(int identificador);
+    Result Add(Usuario usuario);
+    Result DeteleUsuario (int identificador);
 }

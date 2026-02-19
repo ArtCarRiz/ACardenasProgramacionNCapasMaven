@@ -29,12 +29,16 @@
 
                 <div class="row m-2">
 
-                    <div class="col-md-4">
+                    <div class="col-md-9">
                         <p>Para agregar un usuario presionar el boton</p>
                     </div>
 
-                    <div class="col-md-4">
-                        <button class="btn btn-primary">Agregar usuario</button>
+                    <div class="col-md-3">
+                        <br/><!-- comment -->
+
+                        <a class="btn btn-primary" th:href="@{usuario/form}">Agregar un nuevo usuario</a>
+
+                        <br/>
                     </div>
 
                 </div>
@@ -56,25 +60,24 @@
                     </thead>
                     <tbody class="text-start">
 
-                    <br/><!-- comment -->
 
-                    <a class="btn btn-primary" th:href="@{usuario/form}">Agregar</a>
-
-                    <br/>
-
-                    <tr th:each="usuario : ${usuarios}">
+                        <tr th:each="usuario : ${usuarios}">
 
 
-                        <td style="white-space: pre-line;" th:text="|Nombre: ${usuario.nombre} ${usuario.apellidoPaterno}  ${usuario.ApellidoMaterno}
-                            FechaNacimiento: ${usuario.FechaNacimiento}
-                            Sexo: ${usuario.Sexo}|"></td>
-                        
-                        <td th:each="rol : ${usuario.rol}"  style="white-space: pre-line;" th:text="|Email: ${usuario.email} 
-                            Telefono: ${usuario.telefono} 
-                            Celular: ${usuario.celular}
-                            Nombre de usuario: ${usuario.username}
-                            Rol: ${rol.NombreRol}|"></td>
-                        <td > 
+                            <td>
+                                <span style="white-space: pre-line;" th:text="|Nombre: ${usuario.nombre} ${usuario.apellidoPaterno}  ${usuario.ApellidoMaterno}
+                                 FechaNacimiento: ${usuario.FechaNacimiento}
+                                 Sexo: ${usuario.Sexo}|"></span>
+                                <br>
+                                <img th:src="@{'data:image/png;base64,' + ${usuario.imagen}}" alt="Imagen" style="width: 100px" onerror="this.onerror=null; this.outerHTML='<a href=\'https://m.media-amazon.com/images/I/61yF9ssd-3L._AC_UF894,1000_QL80_.jpg\'>Imagen no disponible</a>';"/>
+                            </td>
+
+                            <td th:each="rol : ${usuario.rol}"  style="white-space: pre-line;" th:text="|Email: ${usuario.email} 
+                                Telefono: ${usuario.telefono} 
+                                Celular: ${usuario.celular}
+                                Nombre de usuario: ${usuario.username}
+                                Rol: ${rol.NombreRol}|"></td>
+                            <td> 
                     <li style="white-space: pre-line;" th:each="direccion : ${usuario.Direcciones}" th:text="|Colonia: ${direccion.colonia.nombre}
                         Calle: ${direccion.Calle}   
                         Numero ext: ${direccion.NumeroExterior}|">
@@ -83,66 +86,42 @@
 
                     <td>                        
                         <a class="btn btn-warning" th:href="@{/usuario/form}"><i class="bi bi-pencil-square"></i></a>
-                        <button class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#eliminar"><i class="bi bi-trash-fill"></i></button>
                     </td>
                     </tr>
-
-
-                    <!--                    
-                                        <tr th:each="direccion : ${usuario.direcciones}">
-                                            
-                                            
-                                            <td th:text="|${dierccion.Calle}|"></td>
-                                            
-                                            
-                                            <td>
-                                                <button class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
-                                                <button class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
-                                            </td>
-                                        </tr>-->
-
-
-
-                    <!--                        <tr>
-                                                <td>Arturo Cárdenas Rizo <br> 03/03/03 <br> Ma</td>
-                                                <td> arturo.c.rizo10@gmail.com <br> 7441580319 <br> Celular</td>
-                                                <td>Magenta <br> 1234 <br> 1 (rol)</td>
-                                                <td>CARA030303HGRRZRA3</td>
-                                                <td>
-                                                    <button class="btn btn-outline-light"><i class="bi bi-gear-fill"></i></button>
-                                                    <button class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i></i></button>
-                                                </td>
-                                            </tr>
-                    
-                                             <tr>
-                                                <td>Arturo Cárdenas Rizo <br> 03/03/03 <br> Ma</td>
-                                                <td> arturo.c.rizo10@gmail.com <br> 7441580319 <br> Celular</td>
-                                                <td>Magenta <br> 1234 <br> 1 (rol)</td>
-                                                <td>CARA030303HGRRZRA3</td>
-                                                <td>
-                                                    <button class="btn btn-outline-light"><i class="bi bi-gear-fill"></i></button>
-                                                    <button class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i></i></button>
-                                                </td>
-                                            </tr>
-                                             <tr>
-                                                <td>Arturo Cárdenas Rizo <br> 03/03/03 <br> Ma</td>
-                                                <td> arturo.c.rizo10@gmail.com <br> 7441580319 <br> Celular</td>
-                                                <td>Magenta <br> 1234 <br> 1 (rol)</td>
-                                                <td>CARA030303HGRRZRA3</td>
-                                                <td>
-                                                    <button class="btn btn-outline-light"><i class="bi bi-gear-fill"></i></button>
-                                                    <button class="btn btn-outline-danger"><i class="bi bi-trash-fill"></i></i></button>
-                                                </td>
-                                            </tr>-->
-
 
                     </tbody>
                 </table>
 
             </div>
 
-        </div>
+            <div class="modal fade" id="eliminar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Eliminar usuario</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" >
 
+                            <form method="post" th:object="${usuario}" th:action="@{/usuario/delete}">
+                                Informacion basica del usuario
+                                <input type="hidden" th:field="*{usuarios.IdUsuario}" />
+                                <input type="text" th:field="*{usuarios.Nombre}" />
+                            </form>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a class="btn btn-primary">Eliminar Usuario</a>
+                            <!--                        <button type="button" class="btn btn-primary">Confirmar</button>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 
     </body>
 </html>

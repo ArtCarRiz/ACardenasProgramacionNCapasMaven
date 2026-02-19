@@ -98,59 +98,80 @@ public class UsuarioController {
         return "Form";
     }
 
-    @PostMapping("form")                                                    //del model vienen todas las modificaciones
+    @PostMapping("form")                                                                                                        //del model vienen todas las modificaciones
     public String Accion(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @RequestParam("imagenFile") MultipartFile imagenFile, Model model) {
+        Result result = new Result();
+        try {
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("usuario", usuario);
-            model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-            model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("usuario", usuario);
+                model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+                model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
 
-            if (true) {
-                                
-                usuario.Direcciones.get(0).colonia.municipio.estado.getIdEstado(); ///esto esta bien
-                
+                //guardo en variables los id
+                int idPais = usuario.Direcciones.get(0).colonia.municipio.estado.pais.getIdPais();
+                int idEstado = usuario.Direcciones.get(0).colonia.municipio.estado.getIdEstado();
+                int idMunicipio = usuario.Direcciones.get(0).colonia.municipio.getIdMunicipio();
+                int idColonia = usuario.Direcciones.get(0).colonia.getIdColonia();
+
+                if (idEstado != 0) {
+                    //guardo el valor
+                    model.addAttribute("estados", estadoDAOImplementation.GetAll(idPais).objects);
+                    if (idMunicipio != 0) {
+                        //guardo el valor
+                        model.addAttribute("municipios", municipioDAOImplementation.GetAll(idEstado).objects);
+                        if (idColonia != 0) {
+                            //guardo el valor
+                            model.addAttribute("colonias", coloniaDAOImplementation.GetAll(idMunicipio).objects);
+
+                        }
+                    }
+
+                }
                 return "form";
             }
-        }
 
-        //imagen
-        String nombreArchivo = imagenFile.getOriginalFilename();
-        System.out.println(nombreArchivo);
-        String[] cadena = nombreArchivo.split("\\.");
-        if (cadena[1].equals("jpg") || cadena[1].equals("png")) {
-            //convierto imagen a base 64, y la cargo en el modelo alumno 
-            System.out.println("Imagen");
+            //imagen
+            String nombreArchivo = imagenFile.getOriginalFilename();
+            System.out.println(nombreArchivo);
+            String[] cadena = nombreArchivo.split("\\.");
+            if (cadena[1].equals("jpg") || cadena[1].equals("png")) {
+                //convierto imagen a base 64, y la cargo en el modelo alumno 
+                System.out.println("Imagen");
 
-            //Leer bytes de la imagen
-            Result result = new Result();
-            try {
-                byte[] fileContent = nombreArchivo.getBytes();
+                //Leer bytes de la imagen
+                try {
+                    byte[] fileContent = imagenFile.getBytes();
 
-                //Codificar a Base64
-                String encodedString = Base64.getEncoder().encodeToString(fileContent);
-                
-                usuario.setImagen(encodedString);
-                
-                System.out.println(encodedString);
+                    //Codificar a Base64
+                    String encodedString = Base64.getEncoder().encodeToString(fileContent);
 
-            } catch (Exception e) {
-                result.correct = true;
-                result.errorMessage = e.getLocalizedMessage();
-                result.ex = e;
+                    usuario.setImagen(encodedString);
+
+                    System.out.println(encodedString);
+
+                } catch (Exception e) {
+                    result.correct = true;
+                    result.errorMessage = e.getLocalizedMessage();
+                    result.ex = e;
+                }
+
+            } else if (imagenFile != null) {
+                return "form";
             }
 
-//        } else if (imagenFile != null) {
-//            //retorno error de archivo no permititido y regreso a formulario 
-//            System.out.println("Error");
-//            return "form";
-        }else if(imagenFile != null){
-            return "form";
+            //proceso de agregar datos y retorno a vista de todos los usuarios
+            model.addAttribute("usuario", usuario);
+            result = usuarioDAOImplementation.Add(usuario);
+            if (result.correct == false) {
+                return "form";
+            }
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
         }
-        //proceso de agregar datos y retorno a vista de todos los usuarios
-        System.out.println("Agregar datos e imagen");
-        model.addAttribute("usuario", usuario);
-//        usuarioDAOImplementation.add(usuario)    cuando tengas el ADD en DAO descomenta
         return "redirect:/usuario";
     }
 
@@ -160,6 +181,15 @@ public class UsuarioController {
         Result result = usuarioDAOImplementation.GetById(IdUsuario);
 
         model.addAttribute("usuario", result.object);
+        return "usuario";
+    }
+
+    @GetMapping("/delete/IdUsuario")
+    public String DeteleUsuario(@RequestParam int IdUsuario, Model model) {
+
+        Result result = usuarioDAOImplementation.DeteleUsuario(IdUsuario);
+        model.addAttribute("usuario", result.object);
+        
         return "usuario";
     }
 

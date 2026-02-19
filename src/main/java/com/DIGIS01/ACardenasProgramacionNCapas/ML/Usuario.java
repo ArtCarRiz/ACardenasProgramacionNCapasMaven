@@ -30,7 +30,7 @@ public class Usuario {
     @NotNull(message = "La fecha no puede ser nula")
     @PastOrPresent(message = "La fecha debe ser en el pasado")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date FechaNacimiento; //cambia el resto a DATE
+    private Date FechaNacimiento; 
     
     @NotEmpty(message = "No puedo ser vacio")
     @Pattern(regexp = "^[0-9]{10}$", message = "Solo numeros")
@@ -117,7 +117,7 @@ public class Usuario {
         return ApellidoMaterno;
     }
 
-    public void setFechaNacimiento(Date FechaNacimiento) { ///BUSCAR SI FUNCIONA
+    public void setFechaNacimiento(Date FechaNacimiento) {
         this.FechaNacimiento = FechaNacimiento;
     }
 

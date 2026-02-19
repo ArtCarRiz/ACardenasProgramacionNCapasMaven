@@ -14,6 +14,17 @@ public class Municipio {
     private String Nombre;
     public com.DIGIS01.ACardenasProgramacionNCapas.ML.Estado estado;
 //    public ML.Estado estado;
+    
+    public Municipio(){
+        
+    }
+
+    public Municipio(int IdMunicipio, String Nombre) {
+        this.IdMunicipio = IdMunicipio;
+        this.Nombre = Nombre;
+    }
+    
+    
 
     public void setIdMunicipio(int IdMunicipio) {
         this.IdMunicipio = IdMunicipio;
