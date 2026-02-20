@@ -68,16 +68,15 @@ public class UsuarioController {
 
     @GetMapping
     public String Index(Model model) {
-//        List<Usuario> usuarios = new ArrayList<>();
-//        
-//        usuarios.add(new Usuario("Arturo", "Cardenas", "Rizo", new Date(), "7667675413", "arturo@gmail.com", "Magento", "Conraseña", "Ma", "7441121212", "CARA030303HGRRZRA3"));
-//        usuarios.add(new Usuario("Carlos", "Lopez", "Rizo",  new Date(), "7676451209", "acarlos@gmail.com", "api", "contra", "Ma", "7441580319", "CARA020202HGRR78AW"));
-//        
-//        model.addAttribute("usuarios", usuarios);
-//        return "usuario";
-
         Result result = usuarioDAOImplementation.GetAll();
+        
+        
         model.addAttribute("usuarios", result.objects);
+        model.addAttribute("usuario", new Usuario());
+        model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+        
+        
         return "usuario";
 
     }
