@@ -69,14 +69,12 @@ public class UsuarioController {
     @GetMapping
     public String Index(Model model) {
         Result result = usuarioDAOImplementation.GetAll();
-        
-        
+
         model.addAttribute("usuarios", result.objects);
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
         model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
-        
-        
+
         return "usuario";
 
     }
@@ -236,12 +234,22 @@ public class UsuarioController {
     }
 
     @GetMapping("/GetById/IdUsuario")
-    public String GetById(@RequestParam int IdUsuario, Model model) {
+    public Result GetById(@PathVariable("IdUsuario") int identificador, @ModelAttribute("usuario") Usuario usuario, Model model) {
+        Result result = new Result();
+        try {
+            model.addAttribute("usuarios", result.objects);
+            model.addAttribute("usuario", new Usuario());
 
-        Result result = usuarioDAOImplementation.GetById(IdUsuario);
-
-        model.addAttribute("usuario", result.object);
-        return "usuario";
+            result = usuarioDAOImplementation.GetById(identificador);
+            System.out.println("Funciona GetByIDPais");
+            model.addAttribute("usuario", result.object);
+            System.out.println("Funciona GetByIDPais");
+            
+        } catch (Exception e) {
+            result.correct = false;
+        }
+        System.out.println("Funciona GetByIDPais");
+        return result;
     }
 
     @GetMapping("getEstadosByPais/{IdPais}")

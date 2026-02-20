@@ -37,11 +37,7 @@
                     <div class="col-md-3" >
                         <br/>
                         <!--th:attr="data-target='#modal-toTrash'+${usuario.IdUsuario}"-->
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Agregar" >
-                            Agregar nuevo usuario
-                        </button>
-
-
+                        <a th:href="@{/usuario/form}" class="btn btn-primary">Agregar nuevo usuario</a>
 
                         <br/>
                     </div>
@@ -91,7 +87,7 @@
                     </td>
 
                     <td>                        
-                        <a th:href="@{/usuario/form}" class="btn btn-warning"><i class="bi bi-pencil-square"></i></a>
+                        <a th:href="@{/usuario/GetById/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}"  class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#Agregar"><i class="bi bi-pencil-square"></i></a>
                         <a th:href="@{/usuario/delete/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-danger"><i class="bi bi-trash-fill"></i></a>
 
                     </td>
@@ -116,11 +112,11 @@
                 </div>
                 <div class="modal-body" >
                     <div>
-                        <form method="post" th:object="${usuario}" th:action="@{/usuario/form}" enctype="multipart/form-data">
+                        <form method="post" th:object="${usuario}" th:action="@{/usuario/GetById/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}"  enctype="multipart/form-data">
                             <div class="row m-4">
                                 <div class="col-md-4">
-                                    <input id="NombreUsuario" type="text" pattern="[A-Za-z]+" class="form-control" placeholder="Nombre" th:field="*{Nombre}" >
-                                    <span class="text-danger" th:if="${#fields.hasErrors('Nombre')}" th:errors = "*{Nombre}"></span>
+                                    
+                                    <span id="NombreUsuario" type="text"  th:text="*{nombre}" ></span>
                                 </div>
                                 <div class="col-md-4">
                                     <input id="ApellidoPaternoUsuario" class="form-control" placeholder="Apellido Paterno" th:field="*{ApellidoPaterno}" >
