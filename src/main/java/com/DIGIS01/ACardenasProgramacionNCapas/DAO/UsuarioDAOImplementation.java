@@ -199,6 +199,16 @@ public class UsuarioDAOImplementation implements IUsuario {
                         usuario.setApellidoMaterno(resultSet.getString("ApellidoMaterno"));
                         usuario.setTelefono(resultSet.getString("Telefono"));
                         usuario.setEmail(resultSet.getString("Email"));
+                        usuario.setCelular(resultSet.getString("Celular"));
+                        usuario.setUsername(resultSet.getString("Username"));
+                        usuario.setPassword(resultSet.getString("Password"));
+                        usuario.setFechaNacimiento(resultSet.getDate("FechaNacimiento"));
+                        usuario.setCurp(resultSet.getString("Curp"));
+                        usuario.setImagen(resultSet.getString("Imagen"));
+                        usuario.setSexo(resultSet.getString("Sexo"));
+                        
+                        usuario.Rol = new Rol();
+                        usuario.Rol.setIdRol(resultSet.getInt("IdRol"));
 
                         int idDireccion = resultSet.getInt("IdDireccion");
                         if (idDireccion != 0) {
@@ -225,7 +235,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                             direccion.colonia.municipio.estado.pais.setNombre("NombrePais");
 
                             usuario.Direcciones.add(direccion);
-                            ((Usuario) (result.objects.get(result.objects.size() - 1))).Direcciones.add(direccion);
+//                            ((Usuario) (result.objects.get(result.objects.size() - 1))).Direcciones.add(direccion);
 
                         }
                         result.object = usuario;
@@ -330,7 +340,7 @@ public class UsuarioDAOImplementation implements IUsuario {
 
         try {
 
-            jdbcTemplate.execute("{CALL UsuarioUpdateSP(?,?,?,?,?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
+            jdbcTemplate.execute("{CALL usuarioupdate(?,?,?,?,?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
 
                 callableStatement.setString(1, usuario.getNombre());
                 callableStatement.setString(2, usuario.getApellidoPaterno());

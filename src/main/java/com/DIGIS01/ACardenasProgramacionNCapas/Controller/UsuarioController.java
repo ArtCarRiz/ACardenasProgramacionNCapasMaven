@@ -189,41 +189,17 @@ public class UsuarioController {
 
     }
 
-    @PostMapping("") //a donde lo dirigo?
-    public String UpdateUsuario(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, Model model) {
+    @PostMapping ("/update/{IdUsuario}") 
+    public String UpdateUsuario(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @PathVariable("IdUsuario") int identificador, Model model) {
         Result result = new Result();
 
         try {
-
-            if (bindingResult.hasErrors()) {
-                model.addAttribute("usuario", usuario);
-                model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-                model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
-
-                //guardo en variables los id
-                int idPais = usuario.Direcciones.get(0).colonia.municipio.estado.pais.getIdPais();
-                int idEstado = usuario.Direcciones.get(0).colonia.municipio.estado.getIdEstado();
-                int idMunicipio = usuario.Direcciones.get(0).colonia.municipio.getIdMunicipio();
-                int idColonia = usuario.Direcciones.get(0).colonia.getIdColonia();
-
-                if (idEstado != 0) {
-                    //guardo el valor
-                    model.addAttribute("estados", estadoDAOImplementation.GetAll(idPais).objects);
-                    if (idMunicipio != 0) {
-                        //guardo el valor
-                        model.addAttribute("municipios", municipioDAOImplementation.GetAll(idEstado).objects);
-                        if (idColonia != 0) {
-                            //guardo el valor
-                            model.addAttribute("colonias", coloniaDAOImplementation.GetAll(idMunicipio).objects);
-
-                        }
-                    }
-
-                }
-                return "usuario";
-            }
-
+            
+            model.addAttribute("usuario", usuario);
             result = usuarioDAOImplementation.UpdateUsuario(usuario);
+            if (result.correct == false) {
+                return "form";
+            }
         } catch (Exception e) {
             result.correct = false;
             result.errorMessage = e.getLocalizedMessage();
@@ -233,23 +209,60 @@ public class UsuarioController {
         return "usuario";
     }
 
-    @GetMapping("/GetById/IdUsuario")
-    public Result GetById(@PathVariable("IdUsuario") int identificador, @ModelAttribute("usuario") Usuario usuario, Model model) {
+    @GetMapping("/GetById/{IdUsuario}")
+    @ResponseBody
+    public Result GetById(@PathVariable("IdUsuario") int identificador, Model model) {
         Result result = new Result();
         try {
-            model.addAttribute("usuarios", result.objects);
-            model.addAttribute("usuario", new Usuario());
-
             result = usuarioDAOImplementation.GetById(identificador);
-            System.out.println("Funciona GetByIDPais");
-            model.addAttribute("usuario", result.object);
-            System.out.println("Funciona GetByIDPais");
-            
+
         } catch (Exception e) {
             result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
         }
         System.out.println("Funciona GetByIDPais");
         return result;
+    }
+
+    @GetMapping("/details/{IdUsuario}")
+    public String Details(@PathVariable("IdUsuario") int identificador, Model model) {
+        Result result = new Result();
+        Usuario usuario = new Usuario();
+
+        try {
+            model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+            model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+            model.addAttribute("usuario", usuarioDAOImplementation.GetById(identificador).object);
+
+            int idPais = usuario.Direcciones.get(0).colonia.municipio.estado.pais.getIdPais();
+            int idEstado = usuario.Direcciones.get(0).colonia.municipio.estado.getIdEstado();
+            int idMunicipio = usuario.Direcciones.get(0).colonia.municipio.getIdMunicipio();
+            int idColonia = usuario.Direcciones.get(0).colonia.getIdColonia();
+
+            if (idEstado != 0) {
+                //guardo el valor
+                model.addAttribute("estados", estadoDAOImplementation.GetAll(idPais).objects);
+                if (idMunicipio != 0) {
+                    //guardo el valor
+                    model.addAttribute("municipios", municipioDAOImplementation.GetAll(idEstado).objects);
+                    if (idColonia != 0) {
+                        //guardo el valor
+                        model.addAttribute("colonias", coloniaDAOImplementation.GetAll(idMunicipio).objects);
+
+                    }
+                }
+
+            }
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+        System.out.println("Funciona GetByIDPais");
+
+        return "details";
     }
 
     @GetMapping("getEstadosByPais/{IdPais}")

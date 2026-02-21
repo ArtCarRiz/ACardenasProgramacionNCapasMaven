@@ -1,0 +1,331 @@
+
+<html data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Detalles</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    </head>
+    <body>
+
+
+        <div class="container">
+
+            <div>
+                <div class="row m-4">
+                    <div class="col-md-12">
+                        <h2>Detalles del usuario</h2>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="row" th:object="${usuario}">
+                <div class="col-sm-6 mb-3 mb-sm-0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Detalles del usuario</h5>
+
+                            <div >
+                                <img th:src="@{'data:image/png;base64,' + ${usuario.imagen}}" alt="Imagen" style="display: block; margin-left: auto; margin-right: auto; width: 50%; max-width: 300px;"  onerror="this.onerror=null; this.outerHTML='<a href=\'https://m.media-amazon.com/images/I/61yF9ssd-3L._AC_UF894,1000_QL80_.jpg\'>Imagen no disponible</a>';"/>
+                                <div class="card-body">
+                                    <div class="row m-4">
+                                        <div class="col-md-4">
+                                            <input id="NombreUsuario" class="form-control"  th:field="*{nombre}" >
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input id="ApellidoPaternoUsuario" class="form-control" placeholder="Apellido Paterno" th:field="*{ApellidoPaterno}" >
+                                            <span class="text-danger" th:if="${#fields.hasErrors('ApellidoPaterno')}" th:errors = "*{ApellidoPaterno}"></span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input id="ApellidoMaternoUsuario" class="form-control" placeholder="Apellido Materno" th:field="*{ApellidoMaterno}" >
+                                            <span class="text-danger" th:if="${#fields.hasErrors('ApellidoMaterno')}" th:errors = "*{ApellidoMaterno}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row m-4">
+                                        <div class="col-md-4">
+                                            <input id="FechaNacimiento" type="date" class="form-control" placeholder="Calendario provisional" th:field="*{FechaNacimiento}" >
+                                            <span class="text-danger" th:if="${#fields.hasErrors('FechaNacimiento')}" th:errors = "*{FechaNacimiento}"></span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input id="Telefono"  class="form-control" placeholder="Telefono" maxlength="10" th:field="*{Telefono}">
+                                            <span class="text-danger" th:if="${#fields.hasErrors('Telefono')}" th:errors = "*{Telefono}"></span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input id="Celular"  class="form-control" placeholder="Celular" maxlength="10" th:field="*{Celular}">
+                                            <span class="text-danger" th:if="${#fields.hasErrors('Celular')}" th:errors = "*{Celular}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row m-4">
+                                        <div class="col-md-12">
+                                            <input id="Email"  class="form-control" placeholder="Email" th:field="*{Email}">
+                                            <span class="text-danger" th:if="${#fields.hasErrors('Email')}" th:errors = "*{Email}"></span>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row m-4">
+                                        <div class="col-md-6">
+                                            <input id="Username" class="form-control" placeholder="Nombre de usuario" th:field="*{Username}">
+                                            <span class="text-danger" th:if="${#fields.hasErrors('Username')}" th:errors = "*{Username}"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div >
+                                                <input id="Password" type="password" class="form-control" placeholder="Contraseña" th:field="*{Password}">
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row m-4">
+                                        <div class="col-md-12">
+                                            <div >
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Ma" th:field="*{Sexo}">
+                                                <label class="form-check-label" for="flexRadioDefault1">Hombre</label>
+
+                                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Fe" th:field="*{Sexo}">
+                                                <label class="form-check-label" for="flexRadioDefault2">Mujer</label>
+
+                                            </div>
+                                            <span class="text-danger" th:if="${#fields.hasErrors('Sexo')}" th:errors = "*{Sexo}"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-4">
+                                        <div class="col-md-12">
+                                            <input id="Curp" class="form-control" placeholder="Curp" th:field="*{Curp}">
+                                            <span class="text-danger" th:if="${#fields.hasErrors('Curp')}" th:errors = "*{Curp}"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-4">
+                                        <div class="col-md-12">
+                                            <select class="form-select" th:field="*{Rol.IdRol}">
+                                                <option value="0"  >Selecciona tu rol</option>
+                                                <option th:each="rol : ${roles}" th:value = "${rol.IdRol}" th:text = "${rol.NombreRol}" ></option>                
+                                            </select>
+                                            <span class="text-danger" th:if="${#fields.hasErrors('Rol.IdRol')}" th:errors = "*{Rol.IdRol}"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row m-4">
+                                <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Detalles</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Direcciones y edicion</h5>
+
+                            <div class="row m-4" th:each="direccion : ${usuario.Direcciones}">
+                                <div class="col-md-4">
+                                    <input class="col-md-2 form-control"  th:value="${direccion.colonia.nombre}">
+                                </div>
+                                <div class="col-md-4">
+                                    <input class="col-md-2 form-control"  th:value="${direccion.colonia.CodigoPostal}">
+                                </div>
+                            </div>
+
+                            <div class="row m-4">
+                                <div class="col-md-4">
+                                    <input id="codigopostal" class="form-control" placeholder="Codigo Postal" th:field = "*{Direcciones[0].Colonia.CodigoPostal}">
+                                </div>
+
+                                <div class="col-md-4">                                                          
+                                    <input id="calle" class="form-control" placeholder="Calle" th:field = "*{Direcciones[0].Calle}">
+
+                                </div>
+
+                                <div class="col-md-2">                                                          
+                                    <input id="numexterior" class="form-control" placeholder="numexterior" th:field = "*{Direcciones[0].NumeroExterior}">
+
+                                </div>
+
+                                <div class="col-md-2">                                                          
+                                    <input id="numinterior" class="form-control" placeholder="numinterior" th:field = "*{Direcciones[0].NumeroInterior}">
+
+                                </div>
+                            </div>
+
+                            <div class="row m-4">
+                                <a href="#" class="btn btn-primary">Go somewhere</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+    </body>
+
+    <div class="modal fade" id="Agregar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
+        <div class="modal-dialog  modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Detalles de Usuario</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" >
+                    <div>
+                        <form method="post" th:object="${usuario}" th:action="@{/usuario/details/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}"  enctype="multipart/form-data">
+                            <div class="row m-4">
+                                <div class="col-md-4">
+                                    <input id="NombreUsuario" class="form-control"  th:field="*{nombre}" >
+                                </div>
+                                <div class="col-md-4">
+                                    <input id="ApellidoPaternoUsuario" class="form-control" placeholder="Apellido Paterno" th:field="*{ApellidoPaterno}" >
+                                    <span class="text-danger" th:if="${#fields.hasErrors('ApellidoPaterno')}" th:errors = "*{ApellidoPaterno}"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <input id="ApellidoMaternoUsuario" class="form-control" placeholder="Apellido Materno" th:field="*{ApellidoMaterno}" >
+                                    <span class="text-danger" th:if="${#fields.hasErrors('ApellidoMaterno')}" th:errors = "*{ApellidoMaterno}"></span>
+                                </div>
+                            </div>
+                            <div class="row m-4">
+                                <div class="col-md-12">
+                                    <input id="FechaNacimiento" type="date" class="form-control" placeholder="Calendario provisional" th:field="*{FechaNacimiento}" >
+                                    <span class="text-danger" th:if="${#fields.hasErrors('FechaNacimiento')}" th:errors = "*{FechaNacimiento}"></span>
+                                </div>
+                            </div>
+                            <div class="row m-4">
+                                <div class="col-md-6">
+                                    <input id="Telefono"  class="form-control" placeholder="Telefono" maxlength="10" th:field="*{Telefono}">
+                                    <span class="text-danger" th:if="${#fields.hasErrors('Telefono')}" th:errors = "*{Telefono}"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <input id="Celular"  class="form-control" placeholder="Celular" maxlength="10" th:field="*{Celular}">
+                                    <span class="text-danger" th:if="${#fields.hasErrors('Celular')}" th:errors = "*{Celular}"></span>
+                                </div>
+                            </div>
+                            <div class="row m-4">
+                                <div class="col-md-4">
+                                    <input id="Email"  class="form-control" placeholder="Email" th:field="*{Email}">
+                                    <span class="text-danger" th:if="${#fields.hasErrors('Email')}" th:errors = "*{Email}"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <input id="Username" class="form-control" placeholder="Nombre de usuario" th:field="*{Username}">
+                                    <span class="text-danger" th:if="${#fields.hasErrors('Username')}" th:errors = "*{Username}"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <div >
+                                        <input id="Password" type="password" class="form-control" placeholder="Contraseña" th:field="*{Password}">
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row m-4">
+                                <div class="col-md-12">
+                                    <div >
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Ma" th:field="*{Sexo}">
+                                        <label class="form-check-label" for="flexRadioDefault1">Hombre</label>
+
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Fe" th:field="*{Sexo}">
+                                        <label class="form-check-label" for="flexRadioDefault2">Mujer</label>
+
+                                    </div>
+                                    <span class="text-danger" th:if="${#fields.hasErrors('Sexo')}" th:errors = "*{Sexo}"></span>
+                                </div>
+                            </div>
+
+                            <div class="row m-4">
+                                <div class="col-md-8">
+                                    <input id="Curp" class="form-control" placeholder="Curp" th:field="*{Curp}">
+                                    <span class="text-danger" th:if="${#fields.hasErrors('Curp')}" th:errors = "*{Curp}"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" th:field="*{Rol.IdRol}">
+                                        <option value="0"  >Selecciona tu rol</option>
+                                        <option th:each="rol : ${roles}" th:value = "${rol.IdRol}" th:text = "${rol.NombreRol}" ></option>                
+                                    </select>
+                                    <span class="text-danger" th:if="${#fields.hasErrors('Rol.IdRol')}" th:errors = "*{Rol.IdRol}"></span>
+                                </div>
+
+
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a  th:href="@{/usuario/details/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-primary">Actualizar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function AbrirModal(idUsuario) {
+
+            $.ajax({
+                url: "/usuario/GetById/" + idUsuario,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data, textStatus, jqXHR) {
+
+                    var id = idUsuario;
+                    if (data) {
+                        let usuario = data.object;
+                        $("#NombreUsuario").val(data.object.Nombre);
+                        $("#ApellidoPaternoUsuario").val(usuario.ApellidoPaterno);
+                        $("#ApellidoMaternoUsuario").val(usuario.ApellidoMaterno)
+
+                        var fechaObj = new Date(usuario.FechaNacimiento);
+                        var año = fechaObj.getFullYear();
+                        var mes = ("0" + (fechaObj.getMonth() + 1)).slice(-2); // Añadir cero inicial
+                        var dia = ("0" + fechaObj.getDate()).slice(-2); // Añadir cero inicial
+                        var fechaFormateada = año + "-" + mes + "-" + dia;
+
+
+                        $("#FechaNacimiento").val(fechaFormateada);
+                        $("#Telefono").val(usuario.Telefono);
+                        $("#Celular").val(usuario.Celular);
+                        $("#Email").val(usuario.Email);
+                        $("#Username").val(usuario.Username);
+                        $("#Password").val(usuario.Password);
+
+                        if (usuario.Sexo == 'Ma') {
+                            $("#flexRadioDefault1").prop("checked", true);
+                        } else {
+                            $("#flexRadioDefault2").prop("checked", true);
+                        }
+
+                        $("#Curp").val(usuario.Curp);
+
+
+
+
+
+
+                        var myModal = new bootstrap.Modal(document.getElementById('Agregar'));
+                        myModal.show();
+
+
+                    } else {
+                        console.log("Eror en el modal GetById");
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("No se pudo procesar la tarea");
+                }
+            });
+        }
+    </script>
+
+</html>
