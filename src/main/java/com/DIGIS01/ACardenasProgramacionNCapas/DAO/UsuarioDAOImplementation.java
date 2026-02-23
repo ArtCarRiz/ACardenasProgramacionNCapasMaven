@@ -160,63 +160,39 @@ public class UsuarioDAOImplementation implements IUsuario {
                 callableStatement.execute();
 
                 ResultSet resultSet = (ResultSet) callableStatement.getObject(1);
-
-                /////////
-//                if (resultSet.next()) {
                 result.objects = new ArrayList<>();
-                while (resultSet.next()) {
+                if (resultSet.next()) {
                     int idUsuario = resultSet.getInt("IdUsuario");
-                    //si no esta vacias yyy es el mismo que el ultimo
-                    if (!result.objects.isEmpty() && idUsuario == ((Usuario) (result.objects.get(result.objects.size() - 1))).getIdUsuario()) {
-                        Direccion direccion = new Direccion();
+                    Usuario usuario = new Usuario();
 
-                        direccion.setIdDireccion(resultSet.getInt("IdDireccion"));
-                        direccion.setCalle(resultSet.getString("Calle"));
-                        direccion.setNumeroInterior("NumeroInterior");
-                        direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));
+                    usuario.Rol = new Rol();
 
-                        direccion.colonia = new Colonia();
-                        direccion.colonia.municipio = new Municipio();
-                        direccion.colonia.municipio.estado = new Estado();
-                        direccion.colonia.municipio.estado.pais = new Pais();
+                    usuario.setIdUsuario(idUsuario);
+                    usuario.setNombre(resultSet.getString("NombreUsuario"));
+                    usuario.setApellidoPaterno(resultSet.getString("ApellidoPaterno"));
+                    usuario.setApellidoMaterno(resultSet.getString("ApellidoMaterno"));
+                    usuario.setTelefono(resultSet.getString("Telefono"));
+                    usuario.setEmail(resultSet.getString("Email"));
+                    usuario.setCelular(resultSet.getString("Celular"));
+                    usuario.setUsername(resultSet.getString("Username"));
+                    usuario.setPassword(resultSet.getString("Password"));
+                    usuario.setFechaNacimiento(resultSet.getDate("FechaNacimiento"));
+                    usuario.setCurp(resultSet.getString("Curp"));
+                    usuario.setImagen(resultSet.getString("Imagen"));
+                    usuario.setSexo(resultSet.getString("Sexo"));
+                    usuario.Rol.setIdRol(resultSet.getInt("IdRol"));
 
-                        direccion.colonia.setIdColonia(resultSet.getInt("IdColonia"));
-                        direccion.colonia.setNombre(resultSet.getString("NombreColonia"));
-                        direccion.colonia.setCodigoPostal(resultSet.getString("CodigoPostal"));
-                        direccion.colonia.municipio.setIdMunicipio(resultSet.getInt("IdMunicipio"));
-                        direccion.colonia.municipio.setNombre(resultSet.getString("NombreMunicipio"));
-                        direccion.colonia.municipio.estado.setIdEstado(resultSet.getInt("IdEstado"));
-                        direccion.colonia.municipio.estado.setNombre(resultSet.getString("NombreEstado"));
-                        direccion.colonia.municipio.estado.pais.setIdPais(resultSet.getInt("IdPais"));
-                        direccion.colonia.municipio.estado.pais.setNombre("NombrePais");
+                    int direccionID = resultSet.getInt("IdDireccion");
+                    result.object = usuario;
 
-                        ((Usuario) (result.objects.get(result.objects.size() - 1))).Direcciones.add(direccion);
-                    } else {
-                        Usuario usuario = new Usuario();
-                        usuario.setIdUsuario(idUsuario);
-                        usuario.setNombre(resultSet.getString("NombreUsuario"));
-                        usuario.setApellidoPaterno(resultSet.getString("ApellidoPaterno"));
-                        usuario.setApellidoMaterno(resultSet.getString("ApellidoMaterno"));
-                        usuario.setTelefono(resultSet.getString("Telefono"));
-                        usuario.setEmail(resultSet.getString("Email"));
-                        usuario.setCelular(resultSet.getString("Celular"));
-                        usuario.setUsername(resultSet.getString("Username"));
-                        usuario.setPassword(resultSet.getString("Password"));
-                        usuario.setFechaNacimiento(resultSet.getDate("FechaNacimiento"));
-                        usuario.setCurp(resultSet.getString("Curp"));
-                        usuario.setImagen(resultSet.getString("Imagen"));
-                        usuario.setSexo(resultSet.getString("Sexo"));
-                        
-                        usuario.Rol = new Rol();
-                        usuario.Rol.setIdRol(resultSet.getInt("IdRol"));
-
-                        int idDireccion = resultSet.getInt("IdDireccion");
-                        if (idDireccion != 0) {
-                            usuario.Direcciones = new ArrayList<>();
+                    if (direccionID != 0) {
+                        usuario.Direcciones = new ArrayList<>();
+                        do {
                             Direccion direccion = new Direccion();
-                            direccion.setIdDireccion(idDireccion);
+
+                            direccion.setIdDireccion(resultSet.getInt("IdDireccion"));
                             direccion.setCalle(resultSet.getString("Calle"));
-                            direccion.setNumeroInterior(resultSet.getString("NumeroInterior"));
+                            direccion.setNumeroInterior("NumeroInterior");
                             direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));
 
                             direccion.colonia = new Colonia();
@@ -224,7 +200,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                             direccion.colonia.municipio.estado = new Estado();
                             direccion.colonia.municipio.estado.pais = new Pais();
 
-                            direccion.colonia.setIdColonia(resultSet.getInt("idcolonia"));
+                            direccion.colonia.setIdColonia(resultSet.getInt("IdColonia"));
                             direccion.colonia.setNombre(resultSet.getString("NombreColonia"));
                             direccion.colonia.setCodigoPostal(resultSet.getString("CodigoPostal"));
                             direccion.colonia.municipio.setIdMunicipio(resultSet.getInt("IdMunicipio"));
@@ -235,16 +211,13 @@ public class UsuarioDAOImplementation implements IUsuario {
                             direccion.colonia.municipio.estado.pais.setNombre("NombrePais");
 
                             usuario.Direcciones.add(direccion);
-//                            ((Usuario) (result.objects.get(result.objects.size() - 1))).Direcciones.add(direccion);
-
-                        }
-                        result.object = usuario;
-//                        result.objects.add(usuario);
-                        result.correct = true;
+                        } while (resultSet.next());
                     }
+                    result.correct = true;
+                } else {
+                    result.correct = false;
                 }
 
-                //////
                 return true;
             });
         } catch (Exception e) {
@@ -335,12 +308,42 @@ public class UsuarioDAOImplementation implements IUsuario {
     }
 
     @Override
+    public Result DeleteDireccion(int identificador, int identificadorDireccion) {
+        Result result = new Result();
+
+        try {
+            jdbcTemplate.execute("{CALL DeleteDireccionSP (?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
+
+                callableStatement.setInt(1, identificador);
+                callableStatement.setInt(2, identificadorDireccion);
+
+                int rowAffect = callableStatement.executeUpdate();
+
+                if (rowAffect != 0) {
+                    result.correct = true;
+                } else {
+                    System.out.println("El delete no se concreto");
+                    result.correct = false;
+                }
+
+                return true;
+            });
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
     public Result UpdateUsuario(Usuario usuario) {
         Result result = new Result();
 
         try {
 
-            jdbcTemplate.execute("{CALL usuarioupdate(?,?,?,?,?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
+            jdbcTemplate.execute("{CALL usuarioupdate(?,?,?,?,?,?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
 
                 callableStatement.setString(1, usuario.getNombre());
                 callableStatement.setString(2, usuario.getApellidoPaterno());
@@ -354,11 +357,12 @@ public class UsuarioDAOImplementation implements IUsuario {
                 callableStatement.setString(10, usuario.getCelular());
                 callableStatement.setString(11, usuario.getCurp());
                 callableStatement.setInt(12, usuario.Rol.getIdRol());
-                callableStatement.setInt(13, usuario.getIdUsuario());
-                
+                callableStatement.setString(13, usuario.getImagen());
+                callableStatement.setInt(14, usuario.getIdUsuario());
+
                 int rowAffectted = 0;
                 rowAffectted = callableStatement.executeUpdate();
-                
+
                 result.correct = rowAffectted != 0 ? true : false;
 
                 return true;
@@ -370,6 +374,104 @@ public class UsuarioDAOImplementation implements IUsuario {
             result.ex = e;
         }
 
+        return result;
+    }
+
+    @Override
+    public Result AddDireccion(Direccion direccion, int identificador) {
+        Result result = new Result();
+        try {
+            jdbcTemplate.execute("{CALL DIRECCIONADDSP(?,?,?,?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
+
+                callableStatement.setString(1, direccion.getCalle());
+                callableStatement.setString(2, direccion.getNumeroInterior());
+                callableStatement.setString(3, direccion.getNumeroExterior());
+                callableStatement.setInt(4, direccion.colonia.getIdColonia());
+                callableStatement.setInt(5, identificador);
+
+                int rowAffectted = 0;
+                rowAffectted = callableStatement.executeUpdate();
+
+                result.correct = rowAffectted != 0 ? true : false;
+
+                return true;
+            });
+        } catch (Exception e) {
+            result.correct = true;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
+    public Result UpdateDireccion(Direccion direccion) {
+        Result result = new Result();
+        try {
+
+            jdbcTemplate.execute("{CALL DIRECCIONUPDATESP (?,?,?,?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
+
+                callableStatement.setString(1, direccion.getCalle());
+                callableStatement.setString(2, direccion.getNumeroInterior());
+                callableStatement.setString(3, direccion.getNumeroExterior());
+                callableStatement.setInt(4, direccion.getColonia().getIdColonia());
+                callableStatement.setInt(5, direccion.getIdDireccion());
+
+                int rowAffected = 0;
+                rowAffected = callableStatement.executeUpdate();
+                result.correct = rowAffected != 0 ? true : false;
+
+                return true;
+            });
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+        return result;
+    }
+
+    @Override
+    public Result GetByIdDireccion(int identificador) {
+        Result result = new Result();
+        try {
+            // Usamos result.object para guardar lo que obtengamos del callback
+            result.object = jdbcTemplate.execute("{CALL DIRECCIONGETBYID (?,?)}", (CallableStatementCallback<Object>) callableStatement -> {
+
+                callableStatement.registerOutParameter(1, java.sql.Types.REF_CURSOR);
+                callableStatement.setInt(2, identificador);
+                callableStatement.execute();
+
+                ResultSet resultSet = (ResultSet) callableStatement.getObject(1);
+                Direccion direccion = null;
+
+
+                if (resultSet.next()) {
+                    direccion = new Direccion();
+                    direccion.setCalle(resultSet.getString("Calle"));
+                    direccion.setNumeroInterior(resultSet.getString("NumeroInterior")); // Corregido
+                    direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));
+
+                    direccion.colonia = new com.DIGIS01.ACardenasProgramacionNCapas.ML.Colonia();
+                    direccion.colonia.municipio = new com.DIGIS01.ACardenasProgramacionNCapas.ML.Municipio();
+                    direccion.colonia.municipio.estado = new com.DIGIS01.ACardenasProgramacionNCapas.ML.Estado();
+                    direccion.colonia.municipio.estado.pais = new com.DIGIS01.ACardenasProgramacionNCapas.ML.Pais();
+
+                    direccion.colonia.setIdColonia(resultSet.getInt("IdColonia"));
+
+                }
+
+                return direccion; // Este objeto se guardará en result.object
+            });
+
+            result.correct = (result.object != null);
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
         return result;
     }
 
