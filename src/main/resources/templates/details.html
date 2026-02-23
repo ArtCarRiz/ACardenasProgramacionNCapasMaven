@@ -32,7 +32,7 @@
                             <h5 class="card-title">Detalles del usuario</h5>
 
                             <div >
-                                <img th:src="@{'data:image/png;base64,' + ${usuario.imagen}}" alt="Imagen" style="display: block; margin-left: auto; margin-right: auto; width: 50%; max-width: 300px;"  onerror="this.onerror=null; this.outerHTML='<a href=\'https://m.media-amazon.com/images/I/61yF9ssd-3L._AC_UF894,1000_QL80_.jpg\'>Imagen no disponible</a>';"/>
+                                <img th:src="@{'data:image/png;base64,' + ${usuario.Imagen}}" alt="Imagen" style="display: block; margin-left: auto; margin-right: auto; width: 50%; max-width: 300px;"  onerror="this.onerror=null; this.outerHTML='<a href=\'https://m.media-amazon.com/images/I/61yF9ssd-3L._AC_UF894,1000_QL80_.jpg\'>Imagen no disponible</a>';"/>
                                 <div class="card-body">
                                     <div class="row m-4">
                                         <div class="col-md-4">
@@ -116,7 +116,7 @@
                                 </div>
                             </div>
                             <div class="row m-4">
-                                <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Detalles</button>
+                                <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Actualizar</button>
 
                             </div>
                         </div>
@@ -125,41 +125,36 @@
                 <div class="col-sm-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Direcciones y edicion</h5>
-
-                            <div class="row m-4" th:each="direccion : ${usuario.Direcciones}">
-                                <div class="col-md-4">
-                                    <input class="col-md-2 form-control"  th:value="${direccion.colonia.nombre}">
+                            <div class="row mb-3">
+                                <h5 class="card-title col-md-6">Direcciones Registradas</h5>
+                                <button type="button" class="btn btn-danger col-md-4" th:onclick="AbrirModalAddDireccion()">Agregar direcciones</button>
+                            </div>
+                            <div class="row border-bottom mb-3 pb-2" th:each="direccion : ${usuario.Direcciones}">
+                                <div class="col-md-3">
+                                    <label class="small text-muted">Colonia</label>
+                                    <p th:text="${direccion.colonia.nombre}">Colonia</p>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small text-muted">CP</label>
+                                    <p th:text="${direccion.colonia.CodigoPostal}">00000</p>
                                 </div>
                                 <div class="col-md-4">
-                                    <input class="col-md-2 form-control"  th:value="${direccion.colonia.CodigoPostal}">
+                                    <label class="small text-muted">Calle y Números</label>
+                                    <p th:text="|${direccion.Calle} Ext: ${direccion.NumeroExterior} Int: ${direccion.NumeroInterior}|"></p>
+                                </div>
+                                <div class="col-md-1">
+                                    <form th:action="@{/usuario/delete/{IdUsuario}/{IdDireccion}(IdUsuario=${usuario.IdUsuario}, IdDireccion=${direccion.IdDireccion})}" method="post">
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta dirección?')">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-warning" 
+                                            th:onclick="|AbrirModalEditar('${direccion.IdDireccion}', '${usuario.IdUsuario}')|">
+                                        Editar
+                                    </button>
                                 </div>
                             </div>
 
-                            <div class="row m-4">
-                                <div class="col-md-4">
-                                    <input id="codigopostal" class="form-control" placeholder="Codigo Postal" th:field = "*{Direcciones[0].Colonia.CodigoPostal}">
-                                </div>
-
-                                <div class="col-md-4">                                                          
-                                    <input id="calle" class="form-control" placeholder="Calle" th:field = "*{Direcciones[0].Calle}">
-
-                                </div>
-
-                                <div class="col-md-2">                                                          
-                                    <input id="numexterior" class="form-control" placeholder="numexterior" th:field = "*{Direcciones[0].NumeroExterior}">
-
-                                </div>
-
-                                <div class="col-md-2">                                                          
-                                    <input id="numinterior" class="form-control" placeholder="numinterior" th:field = "*{Direcciones[0].NumeroInterior}">
-
-                                </div>
-                            </div>
-
-                            <div class="row m-4">
-                                <a href="#" class="btn btn-primary">Go somewhere</a>
-                            </div>
 
                         </div>
                     </div>
@@ -171,19 +166,19 @@
         </div>
 
     </body>
-
-    <div class="modal fade" id="Agregar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
-        <div class="modal-dialog  modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Detalles de Usuario</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" >
-                    <div>
-                        <form method="post" th:object="${usuario}" th:action="@{/usuario/details/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}"  enctype="multipart/form-data">
+    <form method="post" th:action="@{/usuario/update/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" th:object="${usuario}" enctype="multipart/form-data">
+        <div class="modal fade" id="Agregar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
+            <div class="modal-dialog  modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Detalles de Usuario</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" >
+                        <div>
                             <div class="row m-4">
                                 <div class="col-md-4">
+                                    <input type="hidden" th:field="*{IdUsuario}" />
                                     <input id="NombreUsuario" class="form-control"  th:field="*{nombre}" >
                                 </div>
                                 <div class="col-md-4">
@@ -256,17 +251,162 @@
 
 
                             </div>
+                            <div class="row m-4">
+                                <div class="col-md-4 text-center d-flex flex-column align-items-center">
+                                    <div class="card p-3 w-100 h-100">
+                                        <label class="form-label fw-bold">Imagen</label>
+                                        <input type="file" class="form-control mb-2" name="imagenFile" id="imagenFile"  >
+                                        <img id="previewImage" style="max-width: 300px; max-height: auto" class="mx-auto" src="#"/>
+                                    </div>
+                                </div>
+                            </div>
 
-                        </form>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <a  th:href="@{/usuario/details/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-primary">Actualizar</a>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
+
+    <form  method="post" th:action="@{/usuario/update/{IdDireccion}/{IdUsuario}(IdDireccion=${idDireccionSeleccionada}, IdUsuario=${usuario.IdUsuario})}" th:object="${direccion}">
+        <div class="modal fade" id="formUpdate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
+            <div class="modal-dialog  modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Editar Direccion</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" >
+                        <div>
+                            <div class="row m-4">
+                                <div class="col-md-3">
+                                    <select id="ddlpais" class="form-select" th:field="*{colonia.municipio.estado.pais.IdPais}">
+                                        <option value= 0 selected> selecciona tu pais</option>
+                                        <option th:each = "pais : ${paises}" th:value =" ${pais.IdPais}" th:text = "${pais.Nombre}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="ddlestado" class="form-select" th:field = "*{colonia.municipio.estado.IdEstado}">
+                                        <option  value="0" selected> selecciona tu Estado</option>
+                                        <option th:each = "estado : ${estados}" th:value =" ${estado.IdEstado}" th:text = "${estado.Nombre}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="ddlmunicipio" class="form-select" th:field = "*{colonia.municipio.IdMunicipio}">
+                                        <option  value="0" selected> selecciona tu Municipio</option>
+                                        <option th:each = "municipio : ${municipios}" th:value =" ${municipio.IdMunicipio}" th:text = "${municipio.Nombre}"></option>                                
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="ddlcolonia" class="form-select" th:field = "*{colonia.IdColonia}">
+                                        <option  value="0"  data-cp-id selected> selecciona tu Colonia</option>
+                                        <option th:each = "colonia : ${colonias}" th:value =" ${colonia.IdColonia}" th:text = "${colonia.Nombre}"></option>                                
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row m-4">
+                                <div class="col-md-2">
+                                    <input id="codigopostal" class="form-control" placeholder="Codigo Postal" th:field = "*{colonia.CodigoPostal}" >
+                                </div>
+                                <div class="col-md-2">                                                          
+                                    <input id="calle" class="form-control" placeholder="Calle" th:field = "*{Calle}">
+
+                                </div>
+
+                                <div class="col-md-2">                                                          
+                                    <input id="numexterior" class="form-control" placeholder="numexterior" th:field = "*{NumeroExterior}">
+
+                                </div>
+
+                                <div class="col-md-2">                                                          
+                                    <input id="numinterior" class="form-control" placeholder="numinterior" th:field = "*{NumeroInterior}">
+
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="IdUsuario" th:value="${usuario.IdUsuario}" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Agregar direccion</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form  method="post" th:action="@{/usuario/addDireccion}" th:object="${direccion}">
+        <div class="modal fade" id="AgregarDireccion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
+            <div class="modal-dialog  modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Agregar Direccion</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" >
+
+                        <div>
+                            <div class="row m-4">
+                                <div class="col-md-3">
+                                    <select id="ddlpais" class="form-select" th:field="*{colonia.municipio.estado.pais.IdPais}">
+                                        <option value= 0 selected> seleccina tu pais</option>
+                                        <option th:each = "pais : ${paises}" th:value =" ${pais.IdPais}" th:text = "${pais.Nombre}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="ddlestado" class="form-select" th:field = "*{colonia.municipio.estado.IdEstado}">
+                                        <option  value="0" selected> selecciona tu Estado</option>
+                                        <option th:each = "estado : ${estados}" th:value =" ${estado.IdEstado}" th:text = "${estado.Nombre}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="ddlmunicipio" class="form-select" th:field = "*{colonia.municipio.IdMunicipio}">
+                                        <option  value="0" selected> selecciona tu Municipio</option>
+                                        <option th:each = "municipio : ${municipios}" th:value =" ${municipio.IdMunicipio}" th:text = "${municipio.Nombre}"></option>                                
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="ddlcolonia" class="form-select" th:field = "*{colonia.IdColonia}">
+                                        <option  value="0"  data-cp-id selected> selecciona tu Colonia</option>
+                                        <option th:each = "colonia : ${colonias}" th:value =" ${colonia.IdColonia}" th:text = "${colonia.Nombre}"></option>                                
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row m-4">
+                                <div class="col-md-2">
+                                    <input id="codigopostal" class="form-control" placeholder="Codigo Postal">
+                                </div>
+                                <div class="col-md-2">                                                          
+                                    <input id="calle" class="form-control" placeholder="Calle" th:field = "*{Calle}">
+
+                                </div>
+
+                                <div class="col-md-2">                                                          
+                                    <input id="numexterior" class="form-control" placeholder="numexterior" th:field = "*{NumeroExterior}">
+
+                                </div>
+
+                                <div class="col-md-2">                                                          
+                                    <input id="numinterior" class="form-control" placeholder="numinterior" th:field = "*{NumeroInterior}">
+
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="idUsuarioRelacion" th:value="${usuario.IdUsuario}" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Agregar direccion</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 
     <script>
 
@@ -307,11 +447,6 @@
 
                         $("#Curp").val(usuario.Curp);
 
-
-
-
-
-
                         var myModal = new bootstrap.Modal(document.getElementById('Agregar'));
                         myModal.show();
 
@@ -326,6 +461,174 @@
                 }
             });
         }
+    </script>
+
+    <script>
+        function AbrirModalAddDireccion() {
+            console.log("Abriendo modal...");
+            var modalElement = document.getElementById('AgregarDireccion');
+            if (modalElement) {
+
+                var myModal = new bootstrap.Modal(modalElement);
+                myModal.show();
+            } else {
+                console.error("No se encontró el modal con ID AgregarDireccion");
+            }
+        }
+    </script>
+
+    <script>
+
+        function AbrirModalEditar(idDireccion, idUsuario) {
+            $.ajax({
+                url: "/usuario/GetByIdDireccion/" + idDireccion,
+                type: 'GET',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.correct) {
+                        var direccion = result.object; // Aquí está tu objeto ML.Direccion
+
+                        // 1. Llenar campos de texto
+                        $("#calle").val(direccion.calle);
+                        $("#numexterior").val(direccion.numeroExterior);
+                        $("#numinterior").val(direccion.numeroInterior);
+                        $("#codigopostal").val(direccion.colonia.codigoPostal);
+
+                        // 2. Lógica de cascada para los Selects
+                        // Seleccionamos el País y disparamos el cambio para cargar Estados
+                        $("#ddlpais").val(direccion.colonia.municipio.estado.pais.idPais).trigger('change');
+
+                        // Esperamos un momento a que el AJAX de Estados termine para seleccionar el Estado
+                        setTimeout(function () {
+                            $("#ddlestado").val(direccion.colonia.municipio.estado.idEstado).trigger('change');
+
+                            // Esperamos a que carguen los Municipios
+                            setTimeout(function () {
+                                $("#ddlmunicipio").val(direccion.colonia.municipio.idMunicipio).trigger('change');
+
+                                // Esperamos a que carguen las Colonias
+                                setTimeout(function () {
+                                    $("#ddlcolonia").val(direccion.colonia.idColonia);
+                                }, 500);
+                            }, 500);
+                        }, 500);
+
+                        // 3. Actualizar el action del form con los IDs correctos
+                        $("#formUpdate").attr("action", "/usuario/update/" + idDireccion + "/" + idUsuario);
+
+                        // 4. Mostrar el modal
+                        var myModal = new bootstrap.Modal(document.getElementById('EditarDireccion'));
+                        myModal.show();
+                    } else {
+                        alert("Error al consultar la información: " + result.errorMessage);
+                    }
+                },
+                error: function () {
+                    alert("Error en la petición al servidor");
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // JavaScript
+        const input = document.getElementById('imagenFile');
+        const preview = document.getElementById('previewImage');
+
+        input.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                // Crea una URL temporal del archivo seleccionado
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block'; // Muestra la imagen
+                }
+
+                reader.readAsDataURL(file); // Lee el archivo
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            console.log("Scripts de cascada listos");
+
+            // PAIS -> ESTADO
+            $(document).on('change', '#ddlpais', function () {
+                var IdPais = $(this).val();
+                var $estado = $("#ddlestado");
+
+                if (IdPais != 0) {
+                    $.getJSON("/usuario/getEstadosByPais/" + IdPais, function (data) {
+                        $estado.empty().append('<option value="0">Selecciona tu estado</option>');
+                        $.each(data.objects, function (i, estado) {
+                            $estado.append($('<option>', {value: estado.IdEstado, text: estado.Nombre}));
+                        });
+                    }).fail(function () {
+                        alert("Error al cargar estados");
+                    });
+                } else {
+                    limpiarCombos(1);
+                }
+            });
+
+            // ESTADO -> MUNICIPIO
+            $(document).on('change', '#ddlestado', function () {
+                var IdEstado = $(this).val();
+                var $municipio = $("#ddlmunicipio");
+
+                if (IdEstado != 0) {
+                    $.getJSON("/usuario/getMunicipioByEstado/" + IdEstado, function (data) {
+                        $municipio.empty().append('<option value="0">Selecciona tu municipio</option>');
+                        $.each(data.objects, function (i, municipio) {
+                            $municipio.append($('<option>', {value: municipio.IdMunicipio, text: municipio.Nombre}));
+                        });
+                    });
+                } else {
+                    limpiarCombos(2);
+                }
+            });
+
+            // MUNICIPIO -> COLONIA
+            $(document).on('change', '#ddlmunicipio', function () {
+                var IdMunicipio = $(this).val();
+                var $colonia = $("#ddlcolonia");
+
+                if (IdMunicipio != 0) {
+                    $.getJSON("/usuario/getColoniaByMunicipio/" + IdMunicipio, function (data) {
+                        $colonia.empty().append('<option value="0">Selecciona tu colonia</option>');
+                        $.each(data.objects, function (i, colonia) {
+                            // Guardamos el CP en el atributo data-cp
+                            $colonia.append($('<option>', {
+                                value: colonia.IdColonia,
+                                text: colonia.Nombre,
+                                'data-cp': colonia.CodigoPostal
+                            }));
+                        });
+                    });
+                } else {
+                    limpiarCombos(3);
+                }
+            });
+
+            // COLONIA -> CÓDIGO POSTAL
+            $(document).on('change', '#ddlcolonia', function () {
+                var cp = $(this).find(':selected').data('cp');
+                $("#codigopostal").val(cp ? cp : "");
+            });
+
+            function limpiarCombos(nivel) {
+                if (nivel <= 1)
+                    $("#ddlestado").empty().append('<option value="0">Selecciona tu estado</option>');
+                if (nivel <= 2)
+                    $("#ddlmunicipio").empty().append('<option value="0">Selecciona tu municipio</option>');
+                if (nivel <= 3)
+                    $("#ddlcolonia").empty().append('<option value="0">Selecciona tu colonia</option>');
+                $("#codigopostal").val("");
+            }
+        });
     </script>
 
 </html>

@@ -173,6 +173,25 @@ public class UsuarioController {
         return "redirect:/usuario";
     }
 
+    @PostMapping("/addDireccion")
+    public String AddDireccion(@ModelAttribute("direccion") Direccion direccion, @RequestParam("idUsuarioRelacion") int idUsuario, RedirectAttributes redirectAttributes) {
+        Result result = new Result();
+
+        try {
+            result = usuarioDAOImplementation.AddDireccion(direccion, idUsuario);
+
+            if (result.correct) {
+                redirectAttributes.addFlashAttribute("mensaje", "Dirección agregada correctamente");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Error al agregar dirección: " + result.errorMessage);
+            }
+
+        } catch (Exception e) {
+        }
+
+        return "redirect:/usuario/details/" + idUsuario;
+    }
+
     @GetMapping("/delete/{IdUsuario}")
     public String DeteleUsuario(@PathVariable("IdUsuario") int identificador, RedirectAttributes redirectAttributes) {
         Result result = new Result();
@@ -189,16 +208,35 @@ public class UsuarioController {
 
     }
 
-    @PostMapping ("/update/{IdUsuario}") 
-    public String UpdateUsuario(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @PathVariable("IdUsuario") int identificador, Model model) {
+    @PostMapping("/delete/{IdUsuario}/{IdDireccion}")
+    public String DeleteDireccion(@PathVariable("IdUsuario") int identificador, @PathVariable("IdDireccion") int identificadorDireccion, RedirectAttributes redirectAttributes) {
+        Result result = new Result();
+
+        result = usuarioDAOImplementation.DeleteDireccion(identificador, identificadorDireccion);
+
+        if (result.correct == true) {
+            System.out.println("Borrado con exito");
+            redirectAttributes.addFlashAttribute("mensaje", "¡Producto creado exitosamente!");
+            return "redirect:/usuario/details/" + identificador;
+        } else {
+            System.out.println("NO fue borrado");
+            return "redirect:/usuario/details/" + identificador;
+        }
+    }
+
+    @PostMapping("/update/{IdDireccion}/{IdUsuario}")
+    public String UpdateDireccion(@ModelAttribute("direccion") Direccion direccion, @PathVariable("IdDireccion") int IdDireccion, @PathVariable("IdUsuario") int IdUsuario, RedirectAttributes redirectAttributes) {
         Result result = new Result();
 
         try {
-            
-            model.addAttribute("usuario", usuario);
-            result = usuarioDAOImplementation.UpdateUsuario(usuario);
-            if (result.correct == false) {
-                return "form";
+            direccion.setIdDireccion(IdDireccion);
+
+            result = usuarioDAOImplementation.UpdateDireccion(direccion);
+
+            if (result.correct) {
+                redirectAttributes.addFlashAttribute("mensaje", "Dirección actualizada correctamente");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Error al actualizar: " + result.errorMessage);
             }
         } catch (Exception e) {
             result.correct = false;
@@ -206,7 +244,45 @@ public class UsuarioController {
             result.ex = e;
         }
 
-        return "usuario";
+        return "redirect:/usuario/details/" + IdUsuario;
+    }
+
+    @PostMapping("/update/{IdUsuario}")
+    public String UpdateUsuario(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @PathVariable("IdUsuario") int identificador, @RequestParam("imagenFile") MultipartFile imagenFile, Model model) {
+        Result result = new Result();
+        try {
+            //  Verificar si se subió un archivo nuevo
+            if (imagenFile != null && !imagenFile.isEmpty()) {
+                String nombreArchivo = imagenFile.getOriginalFilename();
+                String extension = nombreArchivo.substring(nombreArchivo.lastIndexOf(".") + 1).toLowerCase();
+
+                if (extension.equals("jpg") || extension.equals("png") || extension.equals("jpeg")) {
+                    // Leer bytes y convertir a Base64
+                    byte[] fileContent = imagenFile.getBytes();
+                    String encodedString = Base64.getEncoder().encodeToString(fileContent);
+                    usuario.setImagen(encodedString);
+                }
+            } else {
+
+                result = usuarioDAOImplementation.GetById(identificador);
+                if (result.correct) {
+                    Usuario usuarioanterior = (Usuario) result.object;
+                    usuario.setImagen(usuarioanterior.getImagen());
+                }
+            }
+
+            // Ejecutar la actualización
+            result = usuarioDAOImplementation.UpdateUsuario(usuario);
+
+            if (!result.correct) {
+                return "redirect:/usuario/details/" + identificador;
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        return "redirect:/usuario/details/" + identificador;
     }
 
     @GetMapping("/GetById/{IdUsuario}")
@@ -225,44 +301,57 @@ public class UsuarioController {
         return result;
     }
 
-    @GetMapping("/details/{IdUsuario}")
-    public String Details(@PathVariable("IdUsuario") int identificador, Model model) {
+    @GetMapping("/GetByIdDireccion/{IdDireccion}")
+    @ResponseBody
+    public Result GetByIdDireccion(@PathVariable("IdDireccion") int identificador, Model model) {
         Result result = new Result();
-        Usuario usuario = new Usuario();
-
         try {
-            model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-            model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
-            model.addAttribute("usuario", usuarioDAOImplementation.GetById(identificador).object);
-
-            int idPais = usuario.Direcciones.get(0).colonia.municipio.estado.pais.getIdPais();
-            int idEstado = usuario.Direcciones.get(0).colonia.municipio.estado.getIdEstado();
-            int idMunicipio = usuario.Direcciones.get(0).colonia.municipio.getIdMunicipio();
-            int idColonia = usuario.Direcciones.get(0).colonia.getIdColonia();
-
-            if (idEstado != 0) {
-                //guardo el valor
-                model.addAttribute("estados", estadoDAOImplementation.GetAll(idPais).objects);
-                if (idMunicipio != 0) {
-                    //guardo el valor
-                    model.addAttribute("municipios", municipioDAOImplementation.GetAll(idEstado).objects);
-                    if (idColonia != 0) {
-                        //guardo el valor
-                        model.addAttribute("colonias", coloniaDAOImplementation.GetAll(idMunicipio).objects);
-
-                    }
-                }
-
-            }
+            result = usuarioDAOImplementation.GetByIdDireccion(identificador);
 
         } catch (Exception e) {
             result.correct = false;
             result.errorMessage = e.getLocalizedMessage();
             result.ex = e;
         }
-        System.out.println("Funciona GetByIDPais");
+        return result;
+    }
 
-        return "details";
+    @GetMapping("/details/{IdUsuario}")
+    public String Details(@PathVariable("IdUsuario") int identificador, Model model) {
+        try {
+            Result resultUsuario = usuarioDAOImplementation.GetById(identificador);
+
+            if (resultUsuario.correct) {
+                Usuario usuario = (Usuario) resultUsuario.object;
+                model.addAttribute("usuario", usuario);
+                model.addAttribute("direccion", new Direccion());
+
+                model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+                model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+
+                // Inicializamos las listas como vacías por defecto
+                model.addAttribute("estados", new ArrayList<>());
+                model.addAttribute("municipios", new ArrayList<>());
+                model.addAttribute("colonias", new ArrayList<>());
+
+
+                if (usuario.Direcciones != null && !usuario.Direcciones.isEmpty()) {
+                    var primeraDir = usuario.Direcciones.get(0);
+
+                    // Asegúrate de usar los nombres de métodos correctos (getIdPais vs IdPais)
+                    int idPais = primeraDir.colonia.municipio.estado.pais.getIdPais();
+                    int idEstado = primeraDir.colonia.municipio.estado.getIdEstado();
+                    int idMunicipio = primeraDir.colonia.municipio.getIdMunicipio();
+
+                    model.addAttribute("estados", estadoDAOImplementation.GetAll(idPais).objects);
+                    model.addAttribute("municipios", municipioDAOImplementation.GetAll(idEstado).objects);
+                    model.addAttribute("colonias", coloniaDAOImplementation.GetAll(idMunicipio).objects);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error en details: " + e.getMessage());
+        }
+        return "details"; // Quité el "/" inicial, usualmente es mejor "details"
     }
 
     @GetMapping("getEstadosByPais/{IdPais}")
