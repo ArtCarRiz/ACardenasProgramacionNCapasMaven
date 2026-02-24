@@ -29,6 +29,46 @@
 
                 </div>
 
+                <div class="border border-primary">
+
+                    <div class="row m-2 border border-primary">
+
+                        <div class="col-md-4">
+                            <h3 class="fw-bold">Busqueda libre</h3>
+                        </div>
+
+                    </div>
+
+                    <div class="row m-2 border border-primary">
+
+                        <form method="post" th:action="@{/usuario}" th:object="${usuariobusqueda}">
+                            <div class="row m-4">
+                                <div class="col-md-3">
+                                    <!--<input type="hidden" th:field="*{IdUsuario}" />-->
+                                    <input id="NombreUsuario" class="form-control" placeholder="Nombre" th:field="*{nombre}" >
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="ApellidoPaternoUsuario" class="form-control" placeholder="Apellido Paterno" th:field="*{ApellidoPaterno}" >
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="ApellidoMaternoUsuario" class="form-control" placeholder="Apellido Materno" th:field="*{ApellidoMaterno}" >
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" th:field="*{Rol.IdRol}">
+                                        <option value="0"  >Selecciona tu rol</option>
+                                        <option th:each="rol : ${roles}" th:value = "${rol.IdRol}" th:text = "${rol.NombreRol}" ></option>                
+                                    </select>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <button type="submit" class="btn btn-success"><i class="bi bi-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
                 <div class="row m-2">
 
                     <div class="col-md-9">
@@ -88,8 +128,8 @@
                     </td>
 
                     <td> 
-                        <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Detalles</button>
-                        
+                        <!--                        <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Detalles</button>-->
+
                         <a th:href="@{/usuario/details/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-warning">Detalles</i></a>
                         <a th:href="@{/usuario/delete/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-danger"><i class="bi bi-trash-fill"></i></a>
 
@@ -106,146 +146,7 @@
         </div>
     </body>
 
-    <div class="modal fade" id="Agregar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
-        <div class="modal-dialog  modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Detalles de Usuario</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" >
-                    <div>
-                        <form method="post" th:object="${usuario}" th:action="@{/usuario/GetById/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}"  enctype="multipart/form-data">
-                            <div class="row m-4">
-                                <div class="col-md-4">
-                                    <input id="NombreUsuario" class="form-control"  th:field="*{nombre}" >
-                                </div>
-                                <div class="col-md-4">
-                                    <input id="ApellidoPaternoUsuario" class="form-control" placeholder="Apellido Paterno" th:field="*{ApellidoPaterno}" >
-                                    <span class="text-danger" th:if="${#fields.hasErrors('ApellidoPaterno')}" th:errors = "*{ApellidoPaterno}"></span>
-                                </div>
-                                <div class="col-md-4">
-                                    <input id="ApellidoMaternoUsuario" class="form-control" placeholder="Apellido Materno" th:field="*{ApellidoMaterno}" >
-                                    <span class="text-danger" th:if="${#fields.hasErrors('ApellidoMaterno')}" th:errors = "*{ApellidoMaterno}"></span>
-                                </div>
-                            </div>
-                            <div class="row m-4">
-                                <div class="col-md-12">
-                                    <input id="FechaNacimiento" type="date" class="form-control" placeholder="Calendario provisional" th:field="*{FechaNacimiento}" >
-                                    <span class="text-danger" th:if="${#fields.hasErrors('FechaNacimiento')}" th:errors = "*{FechaNacimiento}"></span>
-                                </div>
-                            </div>
-                            <div class="row m-4">
-                                <div class="col-md-6">
-                                    <input id="Telefono"  class="form-control" placeholder="Telefono" maxlength="10" th:field="*{Telefono}">
-                                    <span class="text-danger" th:if="${#fields.hasErrors('Telefono')}" th:errors = "*{Telefono}"></span>
-                                </div>
-                                <div class="col-md-6">
-                                    <input id="Celular"  class="form-control" placeholder="Celular" maxlength="10" th:field="*{Celular}">
-                                    <span class="text-danger" th:if="${#fields.hasErrors('Celular')}" th:errors = "*{Celular}"></span>
-                                </div>
-                            </div>
-                            <div class="row m-4">
-                                <div class="col-md-4">
-                                    <input id="Email"  class="form-control" placeholder="Email" th:field="*{Email}">
-                                    <span class="text-danger" th:if="${#fields.hasErrors('Email')}" th:errors = "*{Email}"></span>
-                                </div>
-                                <div class="col-md-4">
-                                    <input id="Username" class="form-control" placeholder="Nombre de usuario" th:field="*{Username}">
-                                    <span class="text-danger" th:if="${#fields.hasErrors('Username')}" th:errors = "*{Username}"></span>
-                                </div>
-                                <div class="col-md-4">
-                                    <div >
-                                        <input id="Password" type="password" class="form-control" placeholder="Contraseña" th:field="*{Password}">
-                                    </div>
 
-                                </div>
-                            </div>
-                            <div class="row m-4">
-                                <div class="col-md-12">
-                                    <div >
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="Ma" th:field="*{Sexo}">
-                                        <label class="form-check-label" for="flexRadioDefault1">Hombre</label>
-
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Fe" th:field="*{Sexo}">
-                                        <label class="form-check-label" for="flexRadioDefault2">Mujer</label>
-
-                                    </div>
-                                    <span class="text-danger" th:if="${#fields.hasErrors('Sexo')}" th:errors = "*{Sexo}"></span>
-                                </div>
-                            </div>
-
-                            <div class="row m-4">
-                                <div class="col-md-8">
-                                    <input id="Curp" class="form-control" placeholder="Curp" th:field="*{Curp}">
-                                    <span class="text-danger" th:if="${#fields.hasErrors('Curp')}" th:errors = "*{Curp}"></span>
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-select" th:field="*{Rol.IdRol}">
-                                        <option value="0"  >Selecciona tu rol</option>
-                                        <option th:each="rol : ${roles}" th:value = "${rol.IdRol}" th:text = "${rol.NombreRol}" ></option>                
-                                    </select>
-                                    <span class="text-danger" th:if="${#fields.hasErrors('Rol.IdRol')}" th:errors = "*{Rol.IdRol}"></span>
-                                </div>
-
-                                <div class="row m-4">
-
-                                    <div class = "col-md-3"> 
-                                        <select id="ddlpais" class="form-select" th:field="*{Direcciones[0].colonia.municipio.estado.pais.IdPais}">
-                                            <option value= 0 selected> selecciona tu pais</option>
-                                            <option th:each = "pais : ${paises}" th:value =" ${pais.IdPais}" th:text = "${pais.Nombre}"></option>
-                                        </select>
-                                    </div>
-
-                                    <div class = "col-md-3"> 
-                                        <select id="ddlestado" class="form-select" th:field = "*{Direcciones[0].colonia.municipio.estado.IdEstado}">
-                                            <option  value="0" selected> selecciona tu Estado</option>
-                                            <option th:each = "estado : ${estados}" th:value =" ${estado.IdEstado}" th:text = "${estado.Nombre}"></option>
-                                        </select>
-                                    </div>
-
-                                    <div class = "col-md-3"> 
-                                        <select id="ddlmunicipio" class="form-select" th:field = "*{Direcciones[0].colonia.municipio.IdMunicipio}">
-                                            <option  value="0" selected> selecciona tu Municipio</option>
-                                            <option th:each = "municipio : ${municipios}" th:value =" ${municipio.IdMunicipio}" th:text = "${municipio.Nombre}"></option>                                
-                                        </select>
-                                    </div>
-
-                                    <div class = "col-md-3"> 
-                                        <select id="ddlcolonia" class="form-select" th:field = "*{Direcciones[0].colonia.IdColonia}">
-                                            <option  value="0"  data-cp-id selected> selecciona tu Colonia</option>
-                                            <option th:each = "colonia : ${colonias}" th:value =" ${colonia.IdColonia}" th:text = "${colonia.Nombre}"></option>                                
-                                        </select>
-                                    </div>
-
-                                </div>
-
-                                <div class="row m-4">
-                                    <div class="row m-4">
-                                        <div class="col-md-4 text-center d-flex flex-column align-items-center">
-                                            <div class="card p-3 w-100 h-100">
-                                                <label class="form-label fw-bold">Imagen</label>
-                                                <input type="file" class="form-control mb-2" name="imagenFile" id="imagenFile"  >
-                                                <img id="previewImage" style="max-width: 300px; max-height: auto" class="mx-auto" src="#"/>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </form>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Actualizar usuario</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Actualizar imagen</button>
-                    <button type="button" class="btn btn-primary">Actualizar direccion</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script th:if= "${mensaje != null}"  th:inline="javascript">
         Swal.fire({
@@ -311,7 +212,7 @@
                         const base64String = usuario.Imagen;
                         const mimeType = "image/png"; // Ajusta según el tipo
 
-                            // 2. Convertir Base64 a Blob
+                        // 2. Convertir Base64 a Blob
                         const byteCharacters = atob(base64String);
                         const byteNumbers = new Array(byteCharacters.length);
                         for (let i = 0; i < byteCharacters.length; i++) {
@@ -323,7 +224,7 @@
                         // 3. Crear el objeto File
                         const file = new File([blob], "imagen.png", {type: mimeType});
 
-                            // 4. Asignar el File al input type="file"
+                        // 4. Asignar el File al input type="file"
                         const fileInput = document.querySelector('#imagenFile');
                         const dataTransfer = new DataTransfer();
                         dataTransfer.items.add(file);

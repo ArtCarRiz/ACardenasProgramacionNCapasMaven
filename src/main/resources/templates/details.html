@@ -70,15 +70,15 @@
                                     </div>
 
                                     <div class="row m-4">
-                                        <div class="col-md-6">
+                                        <div class="col-md-12">
                                             <input id="Username" class="form-control" placeholder="Nombre de usuario" th:field="*{Username}">
                                             <span class="text-danger" th:if="${#fields.hasErrors('Username')}" th:errors = "*{Username}"></span>
                                         </div>
-                                        <div class="col-md-6">
+<!--                                        <div class="col-md-6">
                                             <div >
                                                 <input id="Password" type="password" class="form-control" placeholder="Contraseña" th:field="*{Password}">
                                             </div>
-                                        </div>
+                                        </div>-->
 
                                     </div>
 
@@ -115,9 +115,16 @@
 
                                 </div>
                             </div>
-                            <div class="row m-4">
-                                <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Actualizar</button>
-
+                            <div class="row m-4" >
+                                <div class="col-md-4" style="display: flex; justify-content: center;">
+                                <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Usuario</button>
+                                </div>
+                                <div class="col-md-4" style="display: flex; justify-content: center;">
+                                <button type="button" class="btn btn-warning" >Imagen</button>
+                                </div>
+                                <div class="col-md-4" style="display: flex; justify-content: center;">
+                                <button type="button" class="btn btn-warning" >Contraseña</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -127,7 +134,7 @@
                         <div class="card-body">
                             <div class="row mb-3">
                                 <h5 class="card-title col-md-6">Direcciones Registradas</h5>
-                                <button type="button" class="btn btn-danger col-md-4" th:onclick="AbrirModalAddDireccion()">Agregar direcciones</button>
+                                <button type="button" class="btn btn-primary col-md-4" th:onclick="AbrirModalAddDireccion()"><i class="bi bi-house-add"></i> Agregar</button>
                             </div>
                             <div class="row border-bottom mb-3 pb-2" th:each="direccion : ${usuario.Direcciones}">
                                 <div class="col-md-3">
@@ -145,12 +152,12 @@
                                 <div class="col-md-1">
                                     <form th:action="@{/usuario/delete/{IdUsuario}/{IdDireccion}(IdUsuario=${usuario.IdUsuario}, IdDireccion=${direccion.IdDireccion})}" method="post">
                                         <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta dirección?')">
-                                            <i class="bi bi-trash"></i> Eliminar
+                                            <i class="bi bi-trash"></i> 
                                         </button>
                                     </form>
                                     <button type="button" class="btn btn-warning" 
                                             th:onclick="|AbrirModalEditar('${direccion.IdDireccion}', '${usuario.IdUsuario}')|">
-                                        Editar
+                                        <i class="bi bi-pencil-square"></i>
                                     </button>
                                 </div>
                             </div>
@@ -486,7 +493,7 @@
                 dataType: 'json',
                 success: function (result) {
                     if (result.correct) {
-                        var direccion = result.object; // Aquí está tu objeto ML.Direccion
+                        var direccion = result.object; 
 
                         // 1. Llenar campos de texto
                         $("#calle").val(direccion.calle);
@@ -494,29 +501,28 @@
                         $("#numinterior").val(direccion.numeroInterior);
                         $("#codigopostal").val(direccion.colonia.codigoPostal);
 
-                        // 2. Lógica de cascada para los Selects
-                        // Seleccionamos el País y disparamos el cambio para cargar Estados
+                        
                         $("#ddlpais").val(direccion.colonia.municipio.estado.pais.idPais).trigger('change');
 
-                        // Esperamos un momento a que el AJAX de Estados termine para seleccionar el Estado
+                        
                         setTimeout(function () {
                             $("#ddlestado").val(direccion.colonia.municipio.estado.idEstado).trigger('change');
 
-                            // Esperamos a que carguen los Municipios
+                            
                             setTimeout(function () {
                                 $("#ddlmunicipio").val(direccion.colonia.municipio.idMunicipio).trigger('change');
 
-                                // Esperamos a que carguen las Colonias
+                                
                                 setTimeout(function () {
                                     $("#ddlcolonia").val(direccion.colonia.idColonia);
                                 }, 500);
                             }, 500);
                         }, 500);
 
-                        // 3. Actualizar el action del form con los IDs correctos
+                        
                         $("#formUpdate").attr("action", "/usuario/update/" + idDireccion + "/" + idUsuario);
 
-                        // 4. Mostrar el modal
+                        
                         var myModal = new bootstrap.Modal(document.getElementById('EditarDireccion'));
                         myModal.show();
                     } else {
@@ -531,7 +537,7 @@
     </script>
 
     <script>
-        // JavaScript
+        
         const input = document.getElementById('imagenFile');
         const preview = document.getElementById('previewImage');
 
@@ -553,81 +559,131 @@
 
     <script>
         $(document).ready(function () {
-            console.log("Scripts de cascada listos");
+            console.log("Ya termina de cargar la  pagina");
 
-            // PAIS -> ESTADO
-            $(document).on('change', '#ddlpais', function () {
-                var IdPais = $(this).val();
-                var $estado = $("#ddlestado");
-
+            $("#ddlpais").change(function () {
+                console.log("Ya cambie");
+                var IdPais = $("#ddlpais").val();
                 if (IdPais != 0) {
-                    $.getJSON("/usuario/getEstadosByPais/" + IdPais, function (data) {
-                        $estado.empty().append('<option value="0">Selecciona tu estado</option>');
-                        $.each(data.objects, function (i, estado) {
-                            $estado.append($('<option>', {value: estado.IdEstado, text: estado.Nombre}));
-                        });
-                    }).fail(function () {
-                        alert("Error al cargar estados");
+                    $.ajax({
+                        url: "/usuario/getEstadosByPais/" + IdPais,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data, textStatus, jqXHR) {
+                            console.log("Todo ok");
+                            $("#ddlestado").empty();
+                            $("#ddlestado").append("<option value= 0 selected> selecciona tu estado</option>");
+                            $.each(data.objects, function (i, estado) {
+//                                console.log(estado.Nombre);
+                                $("#ddlestado").append("<option value=" + estado.IdEstado + ">" + estado.Nombre + "</option>");
+                            });
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert("No se pudo procesar la tarea");
+                        }
                     });
                 } else {
-                    limpiarCombos(1);
+                    $("#ddlestado").empty();
+                    $("#ddlestado").append("<option value= 0 selected> selecciona tu estado</option>");
+
+                    $("#ddlmunicipio").empty();
+                    $("#ddlmunicipio").append("<option value= 0 selected> selecciona tu municipio</option>");
+
+                    $("#ddlcolonia").empty();
+                    $("#ddlcolonia").append("<option value= 0 selected> selecciona tu colonia</option>");
+
+                    $("#codigopostal").val("");
+
                 }
+
+
             });
 
-            // ESTADO -> MUNICIPIO
-            $(document).on('change', '#ddlestado', function () {
-                var IdEstado = $(this).val();
-                var $municipio = $("#ddlmunicipio");
 
+
+            $("#ddlestado").change(function () {
+                console.log("Ya cambie, estado");
+                var IdEstado = $("#ddlestado").val();
                 if (IdEstado != 0) {
-                    $.getJSON("/usuario/getMunicipioByEstado/" + IdEstado, function (data) {
-                        $municipio.empty().append('<option value="0">Selecciona tu municipio</option>');
-                        $.each(data.objects, function (i, municipio) {
-                            $municipio.append($('<option>', {value: municipio.IdMunicipio, text: municipio.Nombre}));
-                        });
+                    $.ajax({
+                        url: "/usuario/getMunicipioByEstado/" + IdEstado,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data, textStatus, jqXHR) {
+                            console.log("Todo ok, estado");
+                            $("#ddlmunicipio").empty();
+                            $("#ddlmunicipio").append("<option value= 0 selected> selecciona tu municipio</option>");
+                            $.each(data.objects, function (i, municipio) {
+                                console.log(municipio.Nombre);
+                                $("#ddlmunicipio").append("<option value=" + municipio.IdMunicipio + ">" + municipio.Nombre + "</option>");
+                            });
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert("No se pudo procesar la tarea, estado");
+                        }
                     });
                 } else {
-                    limpiarCombos(2);
+                    $("#ddlmunicipio").empty();
+                    $("#ddlmunicipio").append("<option value= 0 selected> selecciona tu municipio</option>");
+
+                    $("#ddlcolonia").empty();
+                    $("#ddlcolonia").append("<option value= 0 selected> selecciona tu colonia</option>");
+
+                    $("#codigopostal").val("");
                 }
+
+
             });
 
-            // MUNICIPIO -> COLONIA
-            $(document).on('change', '#ddlmunicipio', function () {
-                var IdMunicipio = $(this).val();
-                var $colonia = $("#ddlcolonia");
 
+
+
+
+            $("#ddlmunicipio").change(function () {
+                console.log("Ya cambie, municipio");
+                var IdMunicipio = $("#ddlmunicipio").val();
                 if (IdMunicipio != 0) {
-                    $.getJSON("/usuario/getColoniaByMunicipio/" + IdMunicipio, function (data) {
-                        $colonia.empty().append('<option value="0">Selecciona tu colonia</option>');
-                        $.each(data.objects, function (i, colonia) {
-                            // Guardamos el CP en el atributo data-cp
-                            $colonia.append($('<option>', {
-                                value: colonia.IdColonia,
-                                text: colonia.Nombre,
-                                'data-cp': colonia.CodigoPostal
-                            }));
-                        });
+                    $.ajax({
+                        url: "/usuario/getColoniaByMunicipio/" + IdMunicipio,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data, textStatus, jqXHR) {
+                            console.log("Todo ok, municipio");
+                            $("#ddlcolonia").empty();
+                            $("#ddlcolonia").append("<option value= 0 selected> selecciona tu colonia</option>");
+                            $.each(data.objects, function (i, colonia) {
+//                                console.log(colonia.Nombre);
+//                                console.log(colonia.CodigoPostal);
+
+                                $("#ddlcolonia").append("<option value=" + colonia.IdColonia + " data-cp=" + colonia.CodigoPostal + ">" + colonia.Nombre + "</option>");
+
+//                                document.getElementById("#ddlcodigopostal").value(data - cp);
+//                                $("#ddlcodigopostal").append("<input >" + data - cp + "</input>");
+
+
+
+
+
+                            });
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert("No se pudo procesar la tarea, municipio");
+                        }
                     });
                 } else {
-                    limpiarCombos(3);
+                    $("#ddlcolonia").empty();
+                    $("#ddlcolonia").append("<option value= 0 selected> selecciona tu colonia</option>");
+                    $("#codigopostal").val("");
                 }
+
+
             });
 
-            // COLONIA -> CÓDIGO POSTAL
-            $(document).on('change', '#ddlcolonia', function () {
-                var cp = $(this).find(':selected').data('cp');
-                $("#codigopostal").val(cp ? cp : "");
+
+            $("#ddlcolonia").change(function () {
+                $("#codigopostal").val($("#ddlcolonia option:selected").data("cp"));
             });
 
-            function limpiarCombos(nivel) {
-                if (nivel <= 1)
-                    $("#ddlestado").empty().append('<option value="0">Selecciona tu estado</option>');
-                if (nivel <= 2)
-                    $("#ddlmunicipio").empty().append('<option value="0">Selecciona tu municipio</option>');
-                if (nivel <= 3)
-                    $("#ddlcolonia").empty().append('<option value="0">Selecciona tu colonia</option>');
-                $("#codigopostal").val("");
-            }
         });
     </script>
 

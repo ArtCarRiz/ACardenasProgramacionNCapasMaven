@@ -73,16 +73,33 @@ public class UsuarioController {
         model.addAttribute("usuarios", result.objects);
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+//        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+
+        model.addAttribute("usuariobusqueda", new Usuario());
 
         return "usuario";
 
     }
 
-//    @GetMapping("form")
-//    public String Accion(Model model) {
-//        return "Form";
-//    }
+    @PostMapping
+    public String Index(@ModelAttribute("usuariobusqueda") Usuario usuario, Model model) {
+        Result result = new Result();
+        try {
+            result = usuarioDAOImplementation.BusquedaLibre(usuario);
+            model.addAttribute("usuarios", result.objects);
+            model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+            model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+
+            model.addAttribute("usuariobusqueda", usuario);
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return "usuario";
+    }
+
     @GetMapping("form")
     public String Accion(Model model) {
         model.addAttribute("usuario", new Usuario());
@@ -329,29 +346,32 @@ public class UsuarioController {
                 model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
                 model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
 
-                // Inicializamos las listas como vacías por defecto
-                model.addAttribute("estados", new ArrayList<>());
-                model.addAttribute("municipios", new ArrayList<>());
-                model.addAttribute("colonias", new ArrayList<>());
+                //guardo en variables los id
+                int idPais = usuario.Direcciones.get(0).colonia.municipio.estado.pais.getIdPais();
+                int idEstado = usuario.Direcciones.get(0).colonia.municipio.estado.getIdEstado();
+                int idMunicipio = usuario.Direcciones.get(0).colonia.municipio.getIdMunicipio();
+                int idColonia = usuario.Direcciones.get(0).colonia.getIdColonia();
 
-
-                if (usuario.Direcciones != null && !usuario.Direcciones.isEmpty()) {
-                    var primeraDir = usuario.Direcciones.get(0);
-
-                    // Asegúrate de usar los nombres de métodos correctos (getIdPais vs IdPais)
-                    int idPais = primeraDir.colonia.municipio.estado.pais.getIdPais();
-                    int idEstado = primeraDir.colonia.municipio.estado.getIdEstado();
-                    int idMunicipio = primeraDir.colonia.municipio.getIdMunicipio();
-
+                if (idEstado != 0) {
+                    //guardo el valor
                     model.addAttribute("estados", estadoDAOImplementation.GetAll(idPais).objects);
-                    model.addAttribute("municipios", municipioDAOImplementation.GetAll(idEstado).objects);
-                    model.addAttribute("colonias", coloniaDAOImplementation.GetAll(idMunicipio).objects);
+                    if (idMunicipio != 0) {
+                        //guardo el valor
+                        model.addAttribute("municipios", municipioDAOImplementation.GetAll(idEstado).objects);
+                        if (idColonia != 0) {
+                            //guardo el valor
+                            model.addAttribute("colonias", coloniaDAOImplementation.GetAll(idMunicipio).objects);
+
+                        }
+                    }
+
                 }
+
             }
         } catch (Exception e) {
             System.out.println("Error en details: " + e.getMessage());
         }
-        return "details"; // Quité el "/" inicial, usualmente es mejor "details"
+        return "details";
     }
 
     @GetMapping("getEstadosByPais/{IdPais}")
