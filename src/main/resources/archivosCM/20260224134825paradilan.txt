@@ -1,0 +1,154 @@
+from tkinter import *
+from tkinter import messagebox
+from PIL import ImageTk, Image
+from customtkinter import CTk, CTkFrame, CTkEntry, CTkButton, CTkLabel, CTkComboBox
+import mysql.connector
+from mysql.connector import Error
+import Login as logi
+from db import conexion, cursor
+
+def modiTut():
+    global frmMdfTut
+    frmMdfTut = Toplevel(logi.nuevaPantalla, width=500, height=600)
+    frmMdfTut.config(bg=logi.color)
+    frmMdfTut.resizable(0,0)
+    
+    nwFrame = CTkFrame(frmMdfTut, width=400, height=500, fg_color="gray")
+    nwFrame.place(anchor= CENTER, relx =0.5, rely=0.5)
+
+    global nombreUser
+    nombreUser = CTkEntry (nwFrame, fg_color="white", bg_color="gray", corner_radius=30, width=100, height=20, text_color="black", placeholder_text="Nombre")
+    nombreUser.place(x=10, y =50)
+    
+    global ApellidoPatUser
+    ApellidoPatUser = CTkEntry (nwFrame, placeholder_text="A. paterno", fg_color="white", bg_color="gray", corner_radius=30, width=150, height=20, text_color="black")
+    ApellidoPatUser.place(x=10, y=100)
+    
+    global ApellidoMatUser
+    ApellidoMatUser = CTkEntry (nwFrame, placeholder_text="A. paterno", fg_color="white", bg_color="gray", corner_radius=30, width=150, height=20, text_color="black")
+    ApellidoMatUser.place(x=200, y=100)
+    
+    global rfctut
+    rfctut = CTkEntry (nwFrame, placeholder_text="RFC", fg_color="white", bg_color="gray", corner_radius=30, width=100, height=20, text_color="black")
+    rfctut.place(x=10, y=150)
+    
+    global correot
+    correot = CTkEntry (nwFrame, placeholder_text="Correo", fg_color="white", bg_color="gray", corner_radius=30, width=150, height=20, text_color="black")
+    correot.place(x=10, y=200)
+    
+    cursor.execute("SELECT NombreMunicipio FROM Municipio")
+    resultado = cursor.fetchall() ##fetchall cuando se devuelve +1 valor
+    NomMuni = [fila[0] for fila in resultado]
+
+    global municipiot
+    municipiot = CTkComboBox(nwFrame, values= NomMuni)
+    municipiot.place(x=10, y=250)
+    
+    global estad
+    estadopred = ["Guerrero"]
+    estad = CTkComboBox(nwFrame, values=estadopred)
+    estad.place(x=200, y= 250)
+    
+    global cod
+    cod = CTkEntry (nwFrame, placeholder_text="Codigo", fg_color="white", bg_color="gray", corner_radius=30, width=100, height=20, text_color="black")
+    cod.place(x=10, y=300)
+
+    global telef
+    telef = CTkEntry (nwFrame, placeholder_text="Telefono", fg_color="white", bg_color="gray", corner_radius=30, width=150, height=20, text_color="black")
+    telef.place(x=130, y=300)
+    
+    cursor.execute("SELECT idRegimenFiscal FROM RegimenFiscal")
+    resultado2 = cursor.fetchall() ##fetchall cuando se devuelve +1 valor
+    NomRF = [str(fila2[0]) for fila2 in resultado2]  # Convertir cada entero en una cadena
+
+    global idreg
+    idreg = CTkComboBox(nwFrame, values=NomRF)
+    idreg.place(x=10, y =350)
+    
+    
+    
+    cancelar = CTkButton (nwFrame, text="Cancelar", width=50, height= 10, bg_color="transparent", fg_color="white", hover_color="gray", text_color="black", command=cancelarmod)
+    cancelar.place(x= 180, y = 450 )
+    confirmar = CTkButton (nwFrame, text="Confirmar", width=50, height= 10, bg_color="transparent", fg_color="white", hover_color="gray", text_color="black", command= modificarTutor)
+    confirmar.place(x= 20, y=450 )
+
+    global nomreg
+    nomreg = CTkEntry (nwFrame, placeholder_text="Nombre regimen", fg_color="white", bg_color="gray", corner_radius=30, width=100, height=20, text_color="black")
+    nomreg.place(x=200, y=350)
+
+    cursor.execute("SELECT Nombre FROM Padre")
+    resultado = cursor.fetchall() ##fetchall cuando se devuelve +1 valor
+    NomPadre = [fila[0] for fila in resultado]
+    
+    #lista de tutores como lo colocaste en el anterior
+    global combMod
+    combMod = CTkComboBox(nwFrame, values= NomPadre, command= cargarDatosTutor)
+    combMod.place(x=10, y =10)
+    
+    frmMdfTut.mainloop()
+    
+def cargarDatosTutor(nombreSeleccionado):
+
+    # Obtener el nombre del tutor seleccionado en el combobox
+    nombreSeleccionado = combMod.get()  
+    print(nombreSeleccionado)
+    
+    # Consulta SQL para obtener la información del tutor basado en el nombre
+    sentencia = "SELECT padre.Nombre, padre.ApellidoP, padre.ApellidoM, padre.RFC, padre.CorreoElectronico, municipio.NombreMunicipio, direccionfiscal.Estado, direccionfiscal.cp, padre.numero, padre.fk_idRegimenFiscal FROM mydb.direccionfiscal INNER JOIN padre ON  direccionfiscal.fk_idPadre = padre.rfc INNER JOIN municipio on municipio.idMunicipio = direccionfiscal.fk_idMunicipio WHERE padre.Nombre = %s"
+
+    valores = (nombreSeleccionado,)
+    cursor.execute(sentencia, valores)
+    datosTutor = cursor.fetchone()  # Obtener la fila con los datos del tutor
+    print(datosTutor)
+    
+    # Verificar si se encontró un tutor
+    if datosTutor:
+
+        nombreUser.insert(0, datosTutor[0])
+        ApellidoPatUser.insert(0, datosTutor[1])
+        ApellidoMatUser.insert(0, datosTutor[2])
+        rfctut.insert(0, datosTutor[3])
+        correot.insert(0, datosTutor[4])
+        municipiot.set(datosTutor[5])
+        estad.set(datosTutor[6])
+        cod.insert(0, datosTutor[7])
+        telef.insert(0, datosTutor[8])
+        idreg.set(datosTutor[9])
+
+        print(datosTutor)
+        
+    else:
+        messagebox.showerror("Error", "No se encontraron datos para el tutor seleccionado.")
+
+def modificarTutor():
+
+    print()
+
+    ###################
+    nombret = nombreUser.get()
+    apellidoPt = ApellidoPatUser.get()
+    apellidoMt = ApellidoMatUser.get()
+    rfcT = rfctut.get()
+    correo = correot.get()
+    municipio = municipiot.get()
+    estado = estad.get()
+    cp = cod.get()
+    numero = telef.get()
+    idRF = idreg.get()
+    #####################
+
+
+    sentencia2 = "UPDATE padre INNER JOIN direccionfiscal ON direccionfiscal.fk_idPadre = padre.rfc INNER JOIN municipio ON idMunicipio = direccionfiscal.fk_idMunicipio SET padre.Nombre = %s, padre.ApellidoP = %s, padre.ApellidoM = %s, padre.CorreoElectronico = %s, municipio.NombreMunicipio = %s, direccionfiscal.Estado = %s, direccionfiscal.cp = %s, padre.numero = %s, padre.fk_idRegimenFiscal = %s WHERE padre.rfc = %s"
+  
+    valores2 = (nombret, apellidoPt, apellidoMt, correo, municipio, estado, cp, numero, idRF, rfcT)
+
+    cursor.execute(sentencia2, valores2)
+    conexion.commit() #Confirmar la accion
+    messagebox.showinfo("Modificado", "El padre ha sido modificado")
+    #nuevaPantalla()
+
+    frmMdfTut.mainloop()
+
+
+def cancelarmod():
+    frmMdfTut.destroy()

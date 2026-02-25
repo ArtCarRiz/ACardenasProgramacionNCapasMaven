@@ -11,10 +11,14 @@ import com.DIGIS01.ACardenasProgramacionNCapas.DAO.PaisDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.RolDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.UsuarioDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion;
+import com.DIGIS01.ACardenasProgramacionNCapas.ML.ErroresArchivo;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Estado;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
+import com.DIGIS01.ACardenasProgramacionNCapas.ML.Rol;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
+import com.DIGIS01.ACardenasProgramacionNCapas.Service.ValidationService;
 import jakarta.validation.Valid;
+import java.io.BufferedReader;
 import java.io.File;
 import java.sql.CallableStatement;
 import java.util.ArrayList;
@@ -35,7 +39,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 //import org.apache.commons.io.FileUtils;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -65,6 +74,9 @@ public class UsuarioController {
 
     @Autowired
     private ColoniaDAOImplementation coloniaDAOImplementation;
+
+    @Autowired
+    private ValidationService validationService;
 
     @GetMapping
     public String Index(Model model) {
@@ -402,6 +414,130 @@ public class UsuarioController {
 
         result.correct = true;
         return result;
+    }
+
+    @GetMapping("/cargaMasiva")
+    public String CargaMasiva() {
+        return "cargaMasiva";
+    }
+
+    @PostMapping("cargaMasiva")
+    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo) {
+        Result result = new Result();
+        List<Usuario> usuarios = new ArrayList<>();
+        try {
+            if (archivo != null) {
+
+                String rutaBase = System.getProperty("user.dir");
+                String rutaCarpeta = "src/main/resources/archivosCM";
+                String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmSS"));
+                String nombreArchivo = fecha + archivo.getOriginalFilename();
+                String rutaArchivo = rutaBase + "/" + rutaCarpeta + "/" + nombreArchivo;
+                String extension = archivo.getOriginalFilename().split("\\.")[1];
+
+                File archivoFile = new File(rutaArchivo);
+
+                if (extension.equals("txt")) {
+                    archivo.transferTo(new File(rutaArchivo));
+                    usuarios = LecturaArchivoTxt(archivoFile);
+                } else if (extension.equals("xlsx")) {
+
+                } else {
+                    System.out.println("Extensión erVronea, manda archivos del formato solicitado");
+                }
+
+                List<ErroresArchivo> errores = ValidarDatos(usuarios);
+
+                if (errores.isEmpty()) {
+//                    se guarda info
+                } else {
+//                    retorno lista errores, y la renderizo.
+                }
+
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return "cargaMasiva";
+    }
+
+    public List<Usuario> LecturaArchivoTxt(File archivo) {
+        Result result = new Result();
+        List<Usuario> usuarios = null;
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            usuarios = new ArrayList<>();
+            // Opcional: br.readLine(); 
+
+            while ((linea = br.readLine()) != null) {
+
+                String[] datos = linea.split("\\|");
+
+                if (datos.length >= 12) {
+                    Usuario usuario = new Usuario();
+                    usuario.Rol = new Rol();
+
+                    usuario.setNombre(datos[0].trim());
+                    usuario.setApellidoPaterno(datos[1].trim());
+                    usuario.setApellidoMaterno(datos[2].trim());
+                    try {
+                        String fecha = datos[3].trim();
+                        usuario.setFechaNacimiento(formatoFecha.parse(fecha));
+                    } catch (Exception e) {
+                        result.errorMessage = e.getLocalizedMessage();
+                    }
+
+                    usuario.setTelefono(datos[4].trim());
+                    usuario.setEmail(datos[5].trim());
+                    usuario.setUsername(datos[6].trim());
+                    usuario.setPassword(datos[7].trim());
+                    usuario.setSexo(datos[8].trim());
+                    usuario.setCelular(datos[9].trim());
+                    usuario.setCurp(datos[10].trim());
+                    try {
+                        int idRol = Integer.parseInt(datos[11].trim());
+                        usuario.Rol.setIdRol(idRol);
+                    } catch (NumberFormatException e) {
+                        usuario.Rol.setIdRol(0);
+                    }
+
+                    usuarios.add(usuario);
+                }
+            }
+        } catch (IOException e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+        return usuarios;
+    }
+
+    public List<ErroresArchivo> ValidarDatos(List<Usuario> usuarios) {
+        List<ErroresArchivo> errores = new ArrayList<>();
+
+        int numeroFila = 1; // sin encabezados
+
+        for (Usuario usuario : usuarios) {
+            BindingResult bindingResult = validationService.ValidateObject(usuario);
+
+            if (bindingResult.hasErrors()) {
+                for (ObjectError objectError : bindingResult.getAllErrors()) {
+                    ErroresArchivo erroresArchivo = new ErroresArchivo();
+
+                    erroresArchivo.dato = objectError.getObjectName();
+                    erroresArchivo.descripcion = objectError.getDefaultMessage();
+//                    erroresArchivo.fila = objectError
+
+                }
+            }
+
+            numeroFila++;
+        }
+        return errores;
     }
 
 }
