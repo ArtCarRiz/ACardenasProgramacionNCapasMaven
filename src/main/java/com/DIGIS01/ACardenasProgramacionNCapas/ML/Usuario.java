@@ -59,8 +59,8 @@ public class Usuario {
     
     public String Imagen;
 
-    @Valid
-    @NotEmpty(message = "No puede estar vacio")
+//    @Valid
+//    @NotEmpty(message = "No puede estar vacio")
     public List<com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion> Direcciones;
     
     @Valid

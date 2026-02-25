@@ -39,11 +39,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 //import org.apache.commons.io.FileUtils;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -423,7 +429,7 @@ public class UsuarioController {
     }
 
     @PostMapping("cargaMasiva")
-    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo) {
+    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo, RedirectAttributes redirectAttributes) {
         Result result = new Result();
         List<Usuario> usuarios = new ArrayList<>();
         try {
@@ -442,16 +448,20 @@ public class UsuarioController {
                     archivo.transferTo(new File(rutaArchivo));
                     usuarios = LecturaArchivoTxt(archivoFile);
                 } else if (extension.equals("xlsx")) {
-
+                    archivo.transferTo(new File(rutaArchivo));
+                    usuarios = LecturaArchivoXLSX(new File(rutaArchivo));
                 } else {
-                    System.out.println("Extensión erVronea, manda archivos del formato solicitado");
+                    System.out.println("Extensión erronea, manda archivos del formato solicitado");
                 }
 
                 List<ErroresArchivo> errores = ValidarDatos(usuarios);
 
                 if (errores.isEmpty()) {
-//                    se guarda info
+//                     result = usuarioDAOImplementation.Add(usuarios);
+                        return "cargaMasiva";
                 } else {
+
+                    return "cargaMasiva";
 //                    retorno lista errores, y la renderizo.
                 }
 
@@ -465,14 +475,30 @@ public class UsuarioController {
         return "cargaMasiva";
     }
 
+    @GetMapping("/cargamasiva/procesar")
+    public String ProcesarCargaMasiva(RedirectAttributes redirectAttributes) {
+        Result result = new Result();
+        /*Procesar
+        Aperturar archivo
+        Inertar datos
+         */
+        // mensaje de confirmación de carga exitosa
+        if (result.correct) {
+            redirectAttributes.addFlashAttribute("successMesage", "El recurso se agrego de forma correcta");
+            return "redirect:/usuario";
+        }
+        return "redirect:/usuario";
+    }
+
     public List<Usuario> LecturaArchivoTxt(File archivo) {
         Result result = new Result();
         List<Usuario> usuarios = null;
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+
+        try (InputStream inputStream = new FileInputStream(archivo); BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             String linea;
             usuarios = new ArrayList<>();
-            // Opcional: br.readLine(); 
+            // br.readLine(); 
 
             while ((linea = br.readLine()) != null) {
 
@@ -517,26 +543,63 @@ public class UsuarioController {
         return usuarios;
     }
 
+    public List<Usuario> LecturaArchivoXLSX(File archivo) {
+        List<Usuario> usuarios = null;
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+
+        try (InputStream inputStream = new FileInputStream(archivo); XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+
+            XSSFSheet sheet = workbook.getSheetAt(0);
+
+            usuarios = new ArrayList<>();
+
+            for (Row row : sheet) {
+                Usuario usuario = new Usuario();
+                usuario.Rol = new Rol();
+
+                usuario.setNombre(row.getCell(0).toString());
+                usuario.setApellidoPaterno(row.getCell(1).toString());
+                usuario.setApellidoMaterno(row.getCell(2).toString());
+                usuario.setFechaNacimiento(row.getCell(3).getDateCellValue());
+
+                usuario.setTelefono(row.getCell(4).toString());
+                usuario.setEmail(row.getCell(5).toString());
+                usuario.setUsername(row.getCell(6).toString());
+                usuario.setPassword(row.getCell(7).toString());
+                usuario.setSexo(row.getCell(8).toString());
+                usuario.setCelular(row.getCell(9).toString());
+                usuario.setCurp(row.getCell(10).toString());
+
+                usuario.Rol.setIdRol((int) row.getCell(11).getNumericCellValue());
+
+                usuarios.add(usuario);
+            }
+
+        } catch (Exception ex) {
+        }
+
+        return usuarios;
+    }
+
     public List<ErroresArchivo> ValidarDatos(List<Usuario> usuarios) {
         List<ErroresArchivo> errores = new ArrayList<>();
 
-        int numeroFila = 1; // sin encabezados
-
         for (Usuario usuario : usuarios) {
+            int numeroFila = 1; // sin encabezados
             BindingResult bindingResult = validationService.ValidateObject(usuario);
 
             if (bindingResult.hasErrors()) {
+                ErroresArchivo erroresArchivo = new ErroresArchivo();
                 for (ObjectError objectError : bindingResult.getAllErrors()) {
-                    ErroresArchivo erroresArchivo = new ErroresArchivo();
 
-                    erroresArchivo.dato = objectError.getObjectName();
-                    erroresArchivo.descripcion = ((FieldError)objectError).getField();
+//                    erroresArchivo.dato = objectError.getObjectName();
+                    erroresArchivo.dato = ((FieldError) objectError).getField();
+                    erroresArchivo.descripcion = objectError.getDefaultMessage();
                     erroresArchivo.fila = numeroFila;
-
+                    numeroFila++;
                 }
             }
 
-            numeroFila++;
         }
         return errores;
     }
