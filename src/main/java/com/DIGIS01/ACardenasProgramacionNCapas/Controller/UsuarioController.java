@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -529,8 +530,8 @@ public class UsuarioController {
                     ErroresArchivo erroresArchivo = new ErroresArchivo();
 
                     erroresArchivo.dato = objectError.getObjectName();
-                    erroresArchivo.descripcion = objectError.getDefaultMessage();
-//                    erroresArchivo.fila = objectError
+                    erroresArchivo.descripcion = ((FieldError)objectError).getField();
+                    erroresArchivo.fila = numeroFila;
 
                 }
             }
