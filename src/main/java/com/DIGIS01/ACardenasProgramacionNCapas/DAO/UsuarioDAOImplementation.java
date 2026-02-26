@@ -601,4 +601,46 @@ public class UsuarioDAOImplementation implements IUsuario {
         return result;
     }
 
+    @Override
+    public Result AddPrueba(Usuario usuario) {
+        Result result = new Result();
+        try {
+            jdbcTemplate.execute("{CALL UsuarioAdd(?,?,?,?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
+
+
+                callableStatement.setString(1, usuario.getNombre());
+                callableStatement.setString(2, usuario.getApellidoPaterno());
+                callableStatement.setString(3, usuario.getApellidoMaterno());
+
+                callableStatement.setDate(4, new java.sql.Date(usuario.getFechaNacimiento().getTime()));
+                System.out.println(usuario.getFechaNacimiento());
+                System.out.println(usuario.getFechaNacimiento().getTime());
+
+                callableStatement.setString(5, usuario.getTelefono());
+                callableStatement.setString(6, usuario.getEmail());
+                callableStatement.setString(7, usuario.getUsername());
+                callableStatement.setString(8, usuario.getPassword());
+                callableStatement.setString(9, usuario.getSexo());
+                callableStatement.setString(10, usuario.getCelular());
+                callableStatement.setString(11, usuario.getCurp());
+                callableStatement.setInt(12, usuario.Rol.getIdRol());
+               
+
+                int rowAffected = 0;
+                rowAffected = callableStatement.executeUpdate();
+
+                result.correct = rowAffected != 0 ? true : false;
+
+                return true;
+            });
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+
+    }
+
 }

@@ -47,6 +47,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -429,7 +430,7 @@ public class UsuarioController {
     }
 
     @PostMapping("cargaMasiva")
-    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo, RedirectAttributes redirectAttributes) {
+    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo, Model model, RedirectAttributes redirectAttributes) {
         Result result = new Result();
         List<Usuario> usuarios = new ArrayList<>();
         try {
@@ -457,10 +458,12 @@ public class UsuarioController {
                 List<ErroresArchivo> errores = ValidarDatos(usuarios);
 
                 if (errores.isEmpty()) {
-//                     result = usuarioDAOImplementation.Add(usuarios);
-                        return "cargaMasiva";
-                } else {
 
+                    redirectAttributes.addFlashAttribute("mensaje", archivoFile);
+                    return "redirect:usuario";
+
+                } else {
+                    model.addAttribute("errores", errores);
                     return "cargaMasiva";
 //                    retorno lista errores, y la renderizo.
                 }
@@ -475,18 +478,37 @@ public class UsuarioController {
         return "cargaMasiva";
     }
 
-    @GetMapping("/cargamasiva/procesar")
-    public String ProcesarCargaMasiva(RedirectAttributes redirectAttributes) {
+    @GetMapping("usuario")
+    public String ProcesarCargaMasiva(@ModelAttribute("mensaje") File archivo, RedirectAttributes redirectAttributes) {
         Result result = new Result();
         /*Procesar
         Aperturar archivo
         Inertar datos
          */
-        // mensaje de confirmación de carga exitosa
-        if (result.correct) {
-            redirectAttributes.addFlashAttribute("successMesage", "El recurso se agrego de forma correcta");
-            return "redirect:/usuario";
+
+        ////PRUEBA
+        String extension = FilenameUtils.getExtension(archivo.getName());
+
+        List<Usuario> usuarios = new ArrayList<>();
+        String nombreArchivo = archivo.getName();
+        File archivoFile = new File(nombreArchivo);
+
+        if (extension.equals("txt")) {
+            usuarios = LecturaArchivoTxt(archivo);
+        } else if (extension.equals("xlsx")) {
+            usuarios = LecturaArchivoXLSX(archivo);
+        } else {
+            System.out.println("Extensión erronea, manda archivos del formato solicitado");
         }
+
+        for (Usuario usuario : usuarios) {
+            usuarioDAOImplementation.AddPrueba(usuario);
+        }
+
+        //FIN PRUEBA
+        System.out.println("El procesarCargaMasiva funciona");
+        System.out.println(archivo);
+        redirectAttributes.addFlashAttribute("successMesage", "El recurso se agrego de forma correcta");
         return "redirect:/usuario";
     }
 
@@ -507,16 +529,20 @@ public class UsuarioController {
                 if (datos.length >= 12) {
                     Usuario usuario = new Usuario();
                     usuario.Rol = new Rol();
+                    Direccion direccion = new Direccion();
 
                     usuario.setNombre(datos[0].trim());
                     usuario.setApellidoPaterno(datos[1].trim());
                     usuario.setApellidoMaterno(datos[2].trim());
                     try {
                         String fecha = datos[3].trim();
+                        System.out.println(fecha);
                         usuario.setFechaNacimiento(formatoFecha.parse(fecha));
                     } catch (Exception e) {
                         result.errorMessage = e.getLocalizedMessage();
                     }
+
+                    System.out.println(usuario.getFechaNacimiento());
 
                     usuario.setTelefono(datos[4].trim());
                     usuario.setEmail(datos[5].trim());
@@ -531,6 +557,9 @@ public class UsuarioController {
                     } catch (NumberFormatException e) {
                         usuario.Rol.setIdRol(0);
                     }
+
+                    //DIRECCION
+//                    direccion.setCalle(linea);
 
                     usuarios.add(usuario);
                 }
@@ -583,9 +612,9 @@ public class UsuarioController {
 
     public List<ErroresArchivo> ValidarDatos(List<Usuario> usuarios) {
         List<ErroresArchivo> errores = new ArrayList<>();
-
+        int numeroFila = 1; // sin encabezados
         for (Usuario usuario : usuarios) {
-            int numeroFila = 1; // sin encabezados
+
             BindingResult bindingResult = validationService.ValidateObject(usuario);
 
             if (bindingResult.hasErrors()) {
@@ -596,10 +625,12 @@ public class UsuarioController {
                     erroresArchivo.dato = ((FieldError) objectError).getField();
                     erroresArchivo.descripcion = objectError.getDefaultMessage();
                     erroresArchivo.fila = numeroFila;
-                    numeroFila++;
-                }
-            }
 
+                    errores.add(erroresArchivo);
+                }
+
+            }
+            numeroFila++;
         }
         return errores;
     }

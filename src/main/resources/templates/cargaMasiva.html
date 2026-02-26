@@ -42,6 +42,44 @@
             </div>
 
         </div>
+        <div class="container">
+            <div  th:if="${errores != null}" class="alert alert-danger">
+
+                <span>Errores en archivo</span>
+
+                <div class="col-sm table-responsive">
+                    <table class="table table-striped border border-primary">
+                        <thead>
+                            <tr class="text-start">
+                                <th>Fila</th>
+                                <th>Dato</th>
+                                <th>Descripcion</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-start">
+                            <tr th:each="error : ${errores}">
+
+
+                                <td>
+                                    <span style="white-space: pre-line;" th:text="|${error.fila}|"></span>
+                                    <br>
+                                </td>
+                                <td>
+                                    <span style="white-space: pre-line;" th:text="|${error.dato}|"></span>
+                                    <br>
+                                </td>
+                                <td>
+                                    <span style="white-space: pre-line;" th:text="|${error.descripcion}|"></span>
+                                    <br>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </body>
 
 

@@ -45,6 +45,7 @@ public class Usuario {
     @Pattern(regexp = "^[a-zA-Z ]+[0-9]+$", message = "min una letra y min un numero")
     private String Username;
     
+    @NotEmpty(message = "No puedo ser vacio")
     private String Password;
     
     @NotEmpty(message = "No puedo ser vacio")

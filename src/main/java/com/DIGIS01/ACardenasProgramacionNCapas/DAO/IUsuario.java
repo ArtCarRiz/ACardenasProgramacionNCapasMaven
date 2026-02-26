@@ -20,4 +20,5 @@ public interface IUsuario {
     Result UpdateDireccion (Direccion direccion);
     Result GetByIdDireccion (int identificador);
     Result BusquedaLibre (Usuario usuario);
+    Result AddPrueba(Usuario usuario);
 }
