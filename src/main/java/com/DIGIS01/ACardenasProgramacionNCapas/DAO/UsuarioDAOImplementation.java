@@ -93,6 +93,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                         usuario.setCurp(resultSet.getString("Curp"));
 
                         usuario.setImagen(resultSet.getString("Imagen"));
+                        usuario.setEstatus(resultSet.getInt("Estatus"));
                         usuario.Rol = new Rol();
                         usuario.Rol.setIdRol(resultSet.getInt("IDROL"));
                         usuario.Rol.setNombreRol(resultSet.getString("NOMBREROL"));
@@ -658,7 +659,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                         callableStatement.setDate(4, new java.sql.Date(usuario.getFechaNacimiento().getTime()));
                         System.out.println(usuario.getFechaNacimiento());
                         System.out.println(usuario.getFechaNacimiento().getTime());
-                        
+
                         callableStatement.setString(5, usuario.getTelefono());
                         callableStatement.setString(6, usuario.getEmail());
                         callableStatement.setString(7, usuario.getUsername());
@@ -670,13 +671,12 @@ public class UsuarioDAOImplementation implements IUsuario {
                         callableStatement.setString(13, usuario.getImagen());
                         //DIRECCIONES
                         Direccion direccion = usuario.Direcciones.get(0);
-                        
+
                         callableStatement.setString(14, direccion.getCalle());
                         callableStatement.setString(15, direccion.getNumeroExterior());
                         callableStatement.setString(16, direccion.getNumeroInterior());
                         callableStatement.setInt(17, direccion.colonia.getIdColonia());
 
-                        
                     });
             result.correct = true;
         } catch (Exception e) {
@@ -685,6 +685,33 @@ public class UsuarioDAOImplementation implements IUsuario {
             result.ex = e;
         }
 
+        return result;
+    }
+
+    @Override
+    public Result UpdateEstatus(int identificador, int estatus) {
+        Result result = new Result();
+        Usuario usuario = new Usuario();
+
+        try {
+
+            jdbcTemplate.execute("{CALL UPDATEESTATUS(?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
+            
+                callableStatement.setInt(1,estatus );
+                callableStatement.setInt(2, identificador);
+                
+                int rowAffected = 0;
+                rowAffected = callableStatement.executeUpdate();
+                
+                result.correct = rowAffected != 0 ? true : false;
+                
+                return true;
+            });
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
         return result;
     }
 

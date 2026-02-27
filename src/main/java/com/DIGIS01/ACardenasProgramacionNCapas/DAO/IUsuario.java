@@ -23,4 +23,5 @@ public interface IUsuario {
     Result BusquedaLibre (Usuario usuario);
     Result AddPrueba(Usuario usuario);
     Result AddAll (List<Usuario> usuarios);
+    Result UpdateEstatus(int identificador, int estatus);
 }

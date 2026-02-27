@@ -129,10 +129,17 @@
                     </td>
 
                     <td> 
-                        <!--                        <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Detalles</button>-->
-
                         <a th:href="@{/usuario/details/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-warning">Detalles</i></a>
                         <a th:href="@{/usuario/delete/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input switch-estatus" 
+                                   type="checkbox" 
+                                   role="switch" 
+                                   th:id="'switch' + ${usuario.IdUsuario}" 
+                                   th:checked="${usuario.estatus == 1}"
+                                   th:data-id="${usuario.IdUsuario}">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">estatus</label>
+                        </div>
 
                     </td>
                     </tr>
@@ -255,6 +262,41 @@
             title: "Exito",
             text: [[${successMesage}]],
             icon: "success"
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.switch-estatus').on('change', function () {
+                const checkbox = $(this);
+                const idUsuario = checkbox.data('id'); // Obtiene el ID de th:data-id
+                const estatus = checkbox.is(':checked') ? 1 : 0;
+                const label = checkbox.next('.form-check-label'); // Selecciona el label de al lado
+                checkbox.prop('disabled', true);
+                console.log("Enviando -> ID: " + idUsuario + " Estatus: " + estatus);
+                $.ajax({
+                    type: "POST",
+                    url: "/usuario/updateEstatus/" + estatus + "/" + idUsuario,
+                    success: function (response) {
+                        if (response.correct) {
+
+                            console.log("Estatus actualizado con éxito");
+                        } else {
+                            alert("Error al actualizar: " + response.errorMessage);
+                            checkbox.prop('checked', !checkbox.is(':checked'));
+                        }
+                    },
+                    error: function (e) {
+
+                        checkbox.prop('checked', !checkbox.is(':checked'));
+                        
+                    },
+                    complete: function () {
+                        // Re-habilitamos 
+                        checkbox.prop('disabled', false);
+                    }
+                });
+            });
         });
     </script>
 

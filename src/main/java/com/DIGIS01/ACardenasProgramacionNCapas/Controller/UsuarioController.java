@@ -676,5 +676,20 @@ public class UsuarioController {
         }
         return errores;
     }
+    
+    @PostMapping("/updateEstatus/{estatus}/{idUsuario}")
+    public Result UpdateEstatus(@PathVariable("estatus") int estatus, @PathVariable("idUsuario") int idUsuario){
+        Result result = new Result();
+        
+        try {
+            result = usuarioDAOImplementation.UpdateEstatus(idUsuario, estatus);
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+        
+        return result;
+    }
 
 }

@@ -60,6 +60,8 @@ public class Usuario {
     
     @Valid
     public String Imagen;
+    
+    public int Estatus;
 
     @Valid
     @NotEmpty(message = "No puede estar vacio")
@@ -71,7 +73,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String Nombre, String ApellidoPaterno, String ApellidoMaterno, Date FechaNacimiento, String Telefono, String Email, String Username, String Password, String Sexo, String Celular, String Curp, String Imagen) {
+    public Usuario(String Nombre, String ApellidoPaterno, String ApellidoMaterno, Date FechaNacimiento, String Telefono, String Email, String Username, String Password, String Sexo, String Celular, String Curp, String Imagen, int Estatus) {
         this.Nombre = Nombre;
         this.ApellidoPaterno = ApellidoPaterno;
         this.ApellidoMaterno = ApellidoMaterno;
@@ -84,11 +86,20 @@ public class Usuario {
         this.Celular = Celular;
         this.Curp = Curp;
         this.Imagen = Imagen;
+        this.Estatus = Estatus;
     }
 
 //    public List<ML.Direccion> Direcciones;
     public void setIdUsuario(int IdUsuario) {
         this.IdUsuario = IdUsuario;
+    }
+
+    public int getEstatus() {
+        return Estatus;
+    }
+
+    public void setEstatus(int Estatus) {
+        this.Estatus = Estatus;
     }
 
     public int getIdUsuario() {
