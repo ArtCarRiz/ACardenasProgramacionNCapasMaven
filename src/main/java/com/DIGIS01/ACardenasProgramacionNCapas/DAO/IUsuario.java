@@ -7,6 +7,7 @@ package com.DIGIS01.ACardenasProgramacionNCapas.DAO;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
+import java.util.List;
 
 public interface IUsuario {
     
@@ -21,4 +22,5 @@ public interface IUsuario {
     Result GetByIdDireccion (int identificador);
     Result BusquedaLibre (Usuario usuario);
     Result AddPrueba(Usuario usuario);
+    Result AddAll (List<Usuario> usuarios);
 }

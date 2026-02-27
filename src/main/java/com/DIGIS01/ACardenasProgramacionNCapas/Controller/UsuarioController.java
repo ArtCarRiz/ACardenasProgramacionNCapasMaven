@@ -10,6 +10,7 @@ import com.DIGIS01.ACardenasProgramacionNCapas.DAO.MunicipioDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.PaisDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.RolDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.UsuarioDAOImplementation;
+import com.DIGIS01.ACardenasProgramacionNCapas.ML.Colonia;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.ErroresArchivo;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Estado;
@@ -17,6 +18,7 @@ import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Rol;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
 import com.DIGIS01.ACardenasProgramacionNCapas.Service.ValidationService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,7 +36,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import java.util.UUID;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 //import org.apache.commons.io.FileUtils;
@@ -430,7 +432,7 @@ public class UsuarioController {
     }
 
     @PostMapping("cargaMasiva")
-    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo, Model model, RedirectAttributes redirectAttributes) {
+    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo, Model model, RedirectAttributes redirectAttributes, HttpSession session) {
         Result result = new Result();
         List<Usuario> usuarios = new ArrayList<>();
         try {
@@ -458,13 +460,19 @@ public class UsuarioController {
                 List<ErroresArchivo> errores = ValidarDatos(usuarios);
 
                 if (errores.isEmpty()) {
+                    String uuid = UUID.randomUUID().toString();
+                    String llaveSession = "ruta" + uuid;
+                    session.setAttribute(llaveSession, rutaArchivo);
+                    model.addAttribute("uuid", uuid);
+                    model.addAttribute("errores", false);
 
-                    redirectAttributes.addFlashAttribute("mensaje", archivoFile);
-                    return "redirect:usuario";
-
+//                    redirectAttributes.addFlashAttribute("mensaje", archivoFile);
+//                    return "redirect:usuario";
                 } else {
                     model.addAttribute("errores", errores);
-                    return "cargaMasiva";
+                    model.addAttribute("funciono", true);
+
+//                    return "cargaMasiva";
 //                    retorno lista errores, y la renderizo.
                 }
 
@@ -478,38 +486,64 @@ public class UsuarioController {
         return "cargaMasiva";
     }
 
-    @GetMapping("usuario")
-    public String ProcesarCargaMasiva(@ModelAttribute("mensaje") File archivo, RedirectAttributes redirectAttributes) {
+    @GetMapping("/cargaMasiva/procesar/{uuid}")
+    public String ProcesarCargaMasiva(@PathVariable("uuid") String uuid, RedirectAttributes redirectAttributes, HttpSession session) {
         Result result = new Result();
-        /*Procesar
-        Aperturar archivo
-        Inertar datos
-         */
+        List<Usuario> usuarios = new ArrayList<>();
+
+        String llaveSession = "ruta" + uuid;
+        Object objetoRuta = session.getAttribute(llaveSession);
+
+        if (objetoRuta == null) {
+            redirectAttributes.addFlashAttribute("error", "No se encontró el archivo o la sesión expiró.");
+            return "redirect:/usuario/cargaMasiva";
+        }
+
+        String rutaReal = objetoRuta.toString();
+        File archivoFile = new File(rutaReal);
+
+        String extension = rutaReal.substring(rutaReal.lastIndexOf(".") + 1);
+        if (extension.equals("txt")) {
+            usuarios = LecturaArchivoTxt(archivoFile);
+        } else {
+            usuarios = LecturaArchivoXLSX(archivoFile);
+        }
+
+        result = usuarioDAOImplementation.AddAll(usuarios);
+
+        if (result.correct) {
+            redirectAttributes.addFlashAttribute("successMesage", "Carga masiva exitosa.");
+            session.removeAttribute(llaveSession); // Limpiar sesión
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Error: " + result.errorMessage);
+        }
+
+        return "redirect:/usuario";
 
         ////PRUEBA
-        String extension = FilenameUtils.getExtension(archivo.getName());
-
-        List<Usuario> usuarios = new ArrayList<>();
-        String nombreArchivo = archivo.getName();
-        File archivoFile = new File(nombreArchivo);
-
-        if (extension.equals("txt")) {
-            usuarios = LecturaArchivoTxt(archivo);
-        } else if (extension.equals("xlsx")) {
-            usuarios = LecturaArchivoXLSX(archivo);
-        } else {
-            System.out.println("Extensión erronea, manda archivos del formato solicitado");
-        }
-
-        for (Usuario usuario : usuarios) {
-            usuarioDAOImplementation.AddPrueba(usuario);
-        }
-
-        //FIN PRUEBA
-        System.out.println("El procesarCargaMasiva funciona");
-        System.out.println(archivo);
-        redirectAttributes.addFlashAttribute("successMesage", "El recurso se agrego de forma correcta");
-        return "redirect:/usuario";
+//        String extension = FilenameUtils.getExtension(archivo.getName());
+//        List<Usuario> usuarios = new ArrayList<>();
+//
+//        String nombreArchivo = archivo.getName();
+//        File archivoFile = new File(nombreArchivo);
+//
+//        if (extension.equals("txt")) {
+//            usuarios = LecturaArchivoTxt(archivo);
+//        } else if (extension.equals("xlsx")) {
+//            usuarios = LecturaArchivoXLSX(archivo);
+//        } else {
+//            System.out.println("Extensión erronea, manda archivos del formato solicitado");
+//        }
+//
+//        for (Usuario usuario : usuarios) {
+//            usuarioDAOImplementation.AddPrueba(usuario);
+//        }
+//
+//        //FIN PRUEBA
+//        System.out.println("El procesarCargaMasiva funciona");
+//        System.out.println(archivo);
+//        redirectAttributes.addFlashAttribute("successMesage", "El recurso se agrego de forma correcta");
+//        return "redirect:/usuario";
     }
 
     public List<Usuario> LecturaArchivoTxt(File archivo) {
@@ -520,16 +554,16 @@ public class UsuarioController {
         try (InputStream inputStream = new FileInputStream(archivo); BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             String linea;
             usuarios = new ArrayList<>();
-            // br.readLine(); 
 
+            // br.readLine(); 
             while ((linea = br.readLine()) != null) {
 
                 String[] datos = linea.split("\\|");
 
-                if (datos.length >= 12) {
+                if (datos.length >= 17) {
                     Usuario usuario = new Usuario();
                     usuario.Rol = new Rol();
-                    Direccion direccion = new Direccion();
+                    usuario.Direcciones = new ArrayList<>();
 
                     usuario.setNombre(datos[0].trim());
                     usuario.setApellidoPaterno(datos[1].trim());
@@ -557,10 +591,18 @@ public class UsuarioController {
                     } catch (NumberFormatException e) {
                         usuario.Rol.setIdRol(0);
                     }
+                    
+                    usuario.setImagen(datos[12].trim());
 
                     //DIRECCION
-//                    direccion.setCalle(linea);
+                    Direccion direccion = new Direccion();
+                    direccion.colonia = new Colonia();
+                    direccion.setCalle(datos[13].trim());
+                    direccion.setNumeroExterior(datos[14].trim());
+                    direccion.setNumeroInterior(datos[15].trim());
+                    direccion.colonia.setIdColonia(Integer.parseInt(datos[16].trim()));
 
+                    usuario.Direcciones.add(direccion);
                     usuarios.add(usuario);
                 }
             }

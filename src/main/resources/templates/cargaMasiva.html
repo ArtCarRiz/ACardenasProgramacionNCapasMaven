@@ -11,39 +11,45 @@
     </head>
     <body>
         <div class="container">
+            <div th:if="${errores == null}">
+                <button id="mostrarFormulario" class="btn btn-primary" onclick="mostrarFormulario()">Mostrar Formulario</button>
 
-            <button id="mostrarFormulario" class="btn btn-primary" onclick="mostrarFormulario()">Mostrar Formulario</button>
+                <div id="botones" class="row" style="display:none">
+                    <div class="btn-group">
+                        <button class="btn btn-success col-md-6" id="btnExcel">Excel</button>
+                        <button class="btn btn-primary col-md-6" id="btnTxt">TXT</button>
+                    </div>
+                </div>
 
-            <div id="botones" class="row" style="display:none">
-                <div class="btn-group">
-                    <button class="btn btn-success col-md-6" id="btnExcel">Excel</button>
-                    <button class="btn btn-primary col-md-6" id="btnTxt">TXT</button>
+                <div id="formularioArchivo" style="display: none">
+                    <br>
+                    <form action="/usuario/cargaMasiva" method="post" enctype="multipart/form-data">
+                        <input type="file" id="archivo" name="archivo" accept=".xlsx,.txt">
+                        <button type="submit" class="btn btn-success" id="cargaMasiva">Subir Archivo</button>
+                    </form>
+                </div>
+
+
+                <div id="listaErrores" style="display: none">
+                    <br>
+                    <div class="card" style="width: 18rem;">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">An item</li>
+                            <li class="list-group-item">A second item</li>
+                            <li class="list-group-item">A third item</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-
-            <div id="formularioArchivo" style="display: none">
-                <br>
-                <form action="/usuario/cargaMasiva" method="post" enctype="multipart/form-data">
-                    <input type="file" id="archivo" name="archivo" accept=".xlsx,.txt">
-                    <button type="submit" class="btn btn-success" id="cargaMasiva">Subir Archivo</button>
-                </form>
-            </div>
-
-
-            <div id="listaErrores" style="display: none">
-                <br>
-                <div class="card" style="width: 18rem;">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">An item</li>
-                        <li class="list-group-item">A second item</li>
-                        <li class="list-group-item">A third item</li>
-                    </ul>
-                </div>
-            </div>
-
         </div>
+        
+        <div th:if="${errores == false}">
+            <div class="alert alert-success">¡Archivo validado correctamente!</div>
+            <a th:href="@{/usuario/cargaMasiva/procesar/{id}(id=${uuid})}" class="btn btn-success">Procesar carga masiva</a>
+        </div>
+
         <div class="container">
-            <div  th:if="${errores != null}" class="alert alert-danger">
+            <div  th:if="${funciono == true}" class="alert alert-danger">
 
                 <span>Errores en archivo</span>
 

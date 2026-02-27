@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -607,7 +608,6 @@ public class UsuarioDAOImplementation implements IUsuario {
         try {
             jdbcTemplate.execute("{CALL UsuarioAdd(?,?,?,?,?,?,?,?,?,?,?,?)}", (CallableStatementCallback<Boolean>) callableStatement -> {
 
-
                 callableStatement.setString(1, usuario.getNombre());
                 callableStatement.setString(2, usuario.getApellidoPaterno());
                 callableStatement.setString(3, usuario.getApellidoMaterno());
@@ -624,7 +624,6 @@ public class UsuarioDAOImplementation implements IUsuario {
                 callableStatement.setString(10, usuario.getCelular());
                 callableStatement.setString(11, usuario.getCurp());
                 callableStatement.setInt(12, usuario.Rol.getIdRol());
-               
 
                 int rowAffected = 0;
                 rowAffected = callableStatement.executeUpdate();
@@ -641,6 +640,52 @@ public class UsuarioDAOImplementation implements IUsuario {
 
         return result;
 
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result AddAll(List<Usuario> usuarios) {
+        Result result = new Result();
+
+        try {
+            jdbcTemplate.batchUpdate("{CALL USUARIODIRECCIONADDSP(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}",
+                    usuarios,
+                    usuarios.size(),
+                    (callableStatement, usuario) -> {
+                        callableStatement.setString(1, usuario.getNombre());
+                        callableStatement.setString(2, usuario.getApellidoPaterno());
+                        callableStatement.setString(3, usuario.getApellidoMaterno());
+                        callableStatement.setDate(4, new java.sql.Date(usuario.getFechaNacimiento().getTime()));
+                        System.out.println(usuario.getFechaNacimiento());
+                        System.out.println(usuario.getFechaNacimiento().getTime());
+                        
+                        callableStatement.setString(5, usuario.getTelefono());
+                        callableStatement.setString(6, usuario.getEmail());
+                        callableStatement.setString(7, usuario.getUsername());
+                        callableStatement.setString(8, usuario.getPassword());
+                        callableStatement.setString(9, usuario.getSexo());
+                        callableStatement.setString(10, usuario.getCelular());
+                        callableStatement.setString(11, usuario.getCurp());
+                        callableStatement.setInt(12, usuario.Rol.getIdRol());
+                        callableStatement.setString(13, usuario.getImagen());
+                        //DIRECCIONES
+                        Direccion direccion = usuario.Direcciones.get(0);
+                        
+                        callableStatement.setString(14, direccion.getCalle());
+                        callableStatement.setString(15, direccion.getNumeroExterior());
+                        callableStatement.setString(16, direccion.getNumeroInterior());
+                        callableStatement.setInt(17, direccion.colonia.getIdColonia());
+
+                        
+                    });
+            result.correct = true;
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
     }
 
 }
