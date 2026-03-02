@@ -456,12 +456,14 @@ public class UsuarioController {
                 } else {
                     System.out.println("Extensión erronea, manda archivos del formato solicitado");
                 }
-
-                List<ErroresArchivo> errores = ValidarDatos(usuarios);
+                List<ErroresArchivo> errores = null;
+                if (!usuarios.isEmpty()) {
+                    errores = ValidarDatos(usuarios);
+                }
 
                 if (errores.isEmpty()) {
                     String uuid = UUID.randomUUID().toString();
-                    String llaveSession = "ruta" + uuid;
+                    String llaveSession = uuid;
                     session.setAttribute(llaveSession, rutaArchivo);
                     model.addAttribute("uuid", uuid);
                     model.addAttribute("errores", false);
@@ -491,7 +493,7 @@ public class UsuarioController {
         Result result = new Result();
         List<Usuario> usuarios = new ArrayList<>();
 
-        String llaveSession = "ruta" + uuid;
+        String llaveSession = uuid;
         Object objetoRuta = session.getAttribute(llaveSession);
 
         if (objetoRuta == null) {
@@ -591,7 +593,7 @@ public class UsuarioController {
                     } catch (NumberFormatException e) {
                         usuario.Rol.setIdRol(0);
                     }
-                    
+
                     usuario.setImagen(datos[12].trim());
 
                     //DIRECCION
@@ -642,7 +644,18 @@ public class UsuarioController {
                 usuario.setCurp(row.getCell(10).toString());
 
                 usuario.Rol.setIdRol((int) row.getCell(11).getNumericCellValue());
+                usuario.setImagen(row.getCell(12).toString());
 
+                //DIRECCION
+                Direccion direccion = new Direccion();
+                direccion.colonia = new Colonia();
+
+                direccion.setCalle(row.getCell(13).toString());
+                direccion.setNumeroExterior(row.getCell(14).toString());
+                direccion.setNumeroInterior(row.getCell(15).toString());
+                direccion.colonia.setIdColonia((int) row.getCell(16).getNumericCellValue());
+
+                usuario.Direcciones.add(direccion);
                 usuarios.add(usuario);
             }
 
@@ -655,32 +668,42 @@ public class UsuarioController {
     public List<ErroresArchivo> ValidarDatos(List<Usuario> usuarios) {
         List<ErroresArchivo> errores = new ArrayList<>();
         int numeroFila = 1; // sin encabezados
-        for (Usuario usuario : usuarios) {
 
-            BindingResult bindingResult = validationService.ValidateObject(usuario);
+        if (usuarios.isEmpty()) {
 
-            if (bindingResult.hasErrors()) {
-                ErroresArchivo erroresArchivo = new ErroresArchivo();
-                for (ObjectError objectError : bindingResult.getAllErrors()) {
+            for (Usuario usuario : usuarios) {
+
+                BindingResult bindingResult = validationService.ValidateObject(usuario);
+
+                if (bindingResult.hasErrors()) {
+                    ErroresArchivo erroresArchivo = new ErroresArchivo();
+                    for (ObjectError objectError : bindingResult.getAllErrors()) {
 
 //                    erroresArchivo.dato = objectError.getObjectName();
-                    erroresArchivo.dato = ((FieldError) objectError).getField();
-                    erroresArchivo.descripcion = objectError.getDefaultMessage();
-                    erroresArchivo.fila = numeroFila;
+                        erroresArchivo.dato = ((FieldError) objectError).getField();
+                        erroresArchivo.descripcion = objectError.getDefaultMessage();
+                        erroresArchivo.fila = numeroFila;
 
-                    errores.add(erroresArchivo);
+                        errores.add(erroresArchivo);
+                    }
+
                 }
-
+                numeroFila++;
             }
-            numeroFila++;
+        } else {
+            ErroresArchivo erroresArchivo = new ErroresArchivo();
+            erroresArchivo.dato = "FORMATO EQUIVOCADO";
+            erroresArchivo.descripcion = "FORMATO ERRONEO";
+            erroresArchivo.fila = 0;
+            errores.add(erroresArchivo);
         }
         return errores;
     }
-    
+
     @PostMapping("/updateEstatus/{estatus}/{idUsuario}")
-    public Result UpdateEstatus(@PathVariable("estatus") int estatus, @PathVariable("idUsuario") int idUsuario){
+    public Result UpdateEstatus(@PathVariable("estatus") int estatus, @PathVariable("idUsuario") int idUsuario) {
         Result result = new Result();
-        
+
         try {
             result = usuarioDAOImplementation.UpdateEstatus(idUsuario, estatus);
         } catch (Exception e) {
@@ -688,7 +711,7 @@ public class UsuarioController {
             result.errorMessage = e.getLocalizedMessage();
             result.ex = e;
         }
-        
+
         return result;
     }
 

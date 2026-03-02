@@ -129,7 +129,7 @@
                     </td>
 
                     <td> 
-                        <a th:href="@{/usuario/details/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-warning">Detalles</i></a>
+                        <a th:href="@{/usuario/details/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-warning"><i class="bi bi-pencil-square"></i></a>
                         <a th:href="@{/usuario/delete/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" class="btn btn-danger"><i class="bi bi-trash-fill"></i></a>
                         <div class="form-check form-switch">
                             <input class="form-check-input switch-estatus" 
@@ -271,9 +271,9 @@
                 const checkbox = $(this);
                 const idUsuario = checkbox.data('id'); // Obtiene el ID de th:data-id
                 const estatus = checkbox.is(':checked') ? 1 : 0;
-                const label = checkbox.next('.form-check-label'); // Selecciona el label de al lado
+//                const label = checkbox.next('.form-check-label');
                 checkbox.prop('disabled', true);
-                console.log("Enviando -> ID: " + idUsuario + " Estatus: " + estatus);
+                console.log("ID: " + idUsuario + " Estatus: " + estatus);
                 $.ajax({
                     type: "POST",
                     url: "/usuario/updateEstatus/" + estatus + "/" + idUsuario,
@@ -283,17 +283,17 @@
                             console.log("Estatus actualizado con éxito");
                         } else {
                             alert("Error al actualizar: " + response.errorMessage);
-                            checkbox.prop('checked', !checkbox.is(':checked'));
+//                            checkbox.prop('checked', !checkbox.is(':checked'));
                         }
                     },
                     error: function (e) {
 
-                        checkbox.prop('checked', !checkbox.is(':checked'));
+//                        checkbox.prop('checked', !checkbox.is(':checked'));
                         
                     },
                     complete: function () {
                         // Re-habilitamos 
-                        checkbox.prop('disabled', false);
+//                        checkbox.prop('disabled', false);
                     }
                 });
             });

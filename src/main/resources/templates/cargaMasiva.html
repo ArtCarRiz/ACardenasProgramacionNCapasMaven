@@ -11,7 +11,7 @@
     </head>
     <body>
         <div class="container">
-            <div th:if="${errores == null}">
+            <div th:if="${errores != true}">
                 <button id="mostrarFormulario" class="btn btn-primary" onclick="mostrarFormulario()">Mostrar Formulario</button>
 
                 <div id="botones" class="row" style="display:none">
