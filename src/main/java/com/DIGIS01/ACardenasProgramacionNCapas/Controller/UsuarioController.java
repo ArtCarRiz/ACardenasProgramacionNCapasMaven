@@ -10,6 +10,7 @@ import com.DIGIS01.ACardenasProgramacionNCapas.DAO.MunicipioDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.PaisDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.RolDAOImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.UsuarioDAOImplementation;
+import com.DIGIS01.ACardenasProgramacionNCapas.DAO.UsuarioDAOJPAImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Colonia;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.ErroresArchivo;
@@ -87,10 +88,14 @@ public class UsuarioController {
 
     @Autowired
     private ValidationService validationService;
+    
+    @Autowired
+    private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
 
     @GetMapping
     public String Index(Model model) {
-        Result result = usuarioDAOImplementation.GetAll();
+        Result result = usuarioDAOJPAImplementation.GetAll();
+//        Result result = usuarioDAOImplementation.GetAll();
 
         model.addAttribute("usuarios", result.objects);
         model.addAttribute("usuario", new Usuario());
