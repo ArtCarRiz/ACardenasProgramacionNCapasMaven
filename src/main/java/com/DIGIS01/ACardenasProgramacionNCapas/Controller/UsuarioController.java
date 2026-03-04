@@ -204,7 +204,7 @@ public class UsuarioController {
 
             //proceso de agregar datos y retorno a vista de todos los usuarios
             model.addAttribute("usuario", usuario);
-            result = usuarioDAOImplementation.Add(usuario);
+            result = usuarioDAOJPAImplementation.Add(usuario);
             if (result.correct == false) {
                 return "form";
             }
@@ -240,7 +240,8 @@ public class UsuarioController {
     public String DeteleUsuario(@PathVariable("IdUsuario") int identificador, RedirectAttributes redirectAttributes) {
         Result result = new Result();
 
-        result = usuarioDAOImplementation.DeteleUsuario(identificador);
+//        result = usuarioDAOImplementation.DeteleUsuario(identificador);
+        result = usuarioDAOJPAImplementation.DeleteUsuario(identificador);
         if (result.correct == true) {
             System.out.println("Borrado con exito");
             redirectAttributes.addFlashAttribute("mensaje", "¡Producto creado exitosamente!");
@@ -334,7 +335,7 @@ public class UsuarioController {
     public Result GetById(@PathVariable("IdUsuario") int identificador, Model model) {
         Result result = new Result();
         try {
-            result = usuarioDAOImplementation.GetById(identificador);
+            result = usuarioDAOJPAImplementation.GetById(identificador);
 
         } catch (Exception e) {
             result.correct = false;

@@ -5,23 +5,45 @@
 package com.DIGIS01.ACardenasProgramacionNCapas.JPA;
 
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 /**
  *
  * @author digis
  */
+@Entity
 public class Direccion {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "iddireccion")
     private int IdDireccion;
-    private String Calle;
-    private String NumeroInterior;
-    private String NumeroExterior;
-    public com.DIGIS01.ACardenasProgramacionNCapas.JPA.Colonia colonia;
-//    public ML.Colonia colonia;
 
-    
-    public Direccion(){
-        
+    @Column(name = "calle")
+    private String Calle;
+
+    @Column(name = "numerointerior")
+    private String NumeroInterior;
+    @Column(name = "numeroexterior")
+    private String NumeroExterior;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idusuario")
+    public Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "idcolonia")
+    public Colonia colonia;
+
+    public Direccion() {
+
     }
 
     public Direccion(int IdDireccion, String Calle, String NumeroInterior, String NumeroExterior) {
@@ -30,7 +52,7 @@ public class Direccion {
         this.NumeroInterior = NumeroInterior;
         this.NumeroExterior = NumeroExterior;
     }
-    
+
     public void setIdDireccion(int IdDireccion) {
         this.IdDireccion = IdDireccion;
     }
@@ -46,31 +68,36 @@ public class Direccion {
     public String getCalle() {
         return Calle;
     }
-    
-    public void setNumeroInterior(String NumeroInterior){
+
+    public void setNumeroInterior(String NumeroInterior) {
         this.NumeroInterior = NumeroInterior;
     }
-    
-    public String getNumeroInterior (){
+
+    public String getNumeroInterior() {
         return NumeroInterior;
     }
-    
-    public void setNumeroExterior(String NumeroExterior){
+
+    public void setNumeroExterior(String NumeroExterior) {
         this.NumeroExterior = NumeroExterior;
     }
-    
-    public String getNumeroExterior(){
+
+    public String getNumeroExterior() {
         return NumeroExterior;
     }
 
-    public Colonia getColonia() {
-        return colonia;
+//    public Colonia getColonia() {
+//        return colonia;
+//    }
+//
+//    public void setColonia(Colonia colonia) {
+//        this.colonia = colonia;
+//    }
+    public com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setColonia(Colonia colonia) {
-        this.colonia = colonia;
+    public void setUsuario(com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario usuario) {
+        this.usuario = usuario;
     }
-    
-    
 
 }

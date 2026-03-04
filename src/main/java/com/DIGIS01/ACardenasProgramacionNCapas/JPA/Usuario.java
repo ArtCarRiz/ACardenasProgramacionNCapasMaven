@@ -4,6 +4,7 @@
  */
 package com.DIGIS01.ACardenasProgramacionNCapas.JPA;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.Valid;
@@ -20,7 +21,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 public class Usuario {
@@ -36,10 +41,11 @@ public class Usuario {
     @Column (name = "apellidomaterno")
     private String ApellidoMaterno;
 
-//    @NotNull(message = "La fecha no puede ser nula")
-//    @PastOrPresent(message = "La fecha debe ser en el pasado")
-//    @DateTimeFormat(pattern = "yyyy-MM-dd")
-//    private Date FechaNacimiento; 
+   @Temporal(TemporalType.DATE)
+   @Column(name = "fechanacimiento")
+    private Date FechaNacimiento; 
+    
+    
     @Column (name = "telefono")
     private String Telefono;
 
@@ -61,15 +67,16 @@ public class Usuario {
     @Column (name = "curp")
     private String Curp;
 
-//    @Valid
-//    public String Imagen;
+    @Lob
+    @Column(name = "imagen", columnDefinition = "CLOB")
+    public String Imagen;
+    
     @Column (name = "estatus")
     public int Estatus;
 
-//    @Valid
-//    @NotEmpty(message = "No puede estar vacio")
-//    public List<com.DIGIS01.ACardenasProgramacionNCapas.JPA.Direccion> Direcciones;
-//    
+    @OneToMany (mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Direccion> Direcciones;
+    
     @ManyToOne
     @JoinColumn(name = "idrol") // FK
     public com.DIGIS01.ACardenasProgramacionNCapas.JPA.Rol Rol;
@@ -133,13 +140,13 @@ public class Usuario {
         return ApellidoMaterno;
     }
 
-//    public void setFechaNacimiento(Date FechaNacimiento) {
-//        this.FechaNacimiento = FechaNacimiento;
-//    }
-//
-//    public Date getFechaNacimiento() {
-//        return FechaNacimiento;
-//    }
+    public void setFechaNacimiento(Date FechaNacimiento) {
+        this.FechaNacimiento = FechaNacimiento;
+    }
+
+    public Date getFechaNacimiento() {
+        return FechaNacimiento;
+    }
     public void setTelefono(String Telefono) {
         this.Telefono = Telefono;
     }
@@ -196,15 +203,15 @@ public class Usuario {
         return Curp;
     }
 
-//    public String getImagen() {
-//        return Imagen;
-//    }
-//
-//    public void setImagen(String Imagen) {
-//        this.Imagen = Imagen;
-//    }
-//    
-//
+    public String getImagen() {
+        return Imagen;
+    }
+
+    public void setImagen(String Imagen) {
+        this.Imagen = Imagen;
+    }
+    
+
     public void setRol(Rol rol) {
         this.Rol = rol;
     }
@@ -212,7 +219,7 @@ public class Usuario {
     public Rol getRol() {
         return Rol;
     }
-//
+
 //    public List<Direccion> getDirecciones() {
 //        return Direcciones;
 //    }

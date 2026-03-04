@@ -4,16 +4,32 @@
  */
 package com.DIGIS01.ACardenasProgramacionNCapas.JPA;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 
 /**
  *
  * @author digis
  */
+@Entity
 public class Estado {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idestado")
     private int IdEstado;
+    @Column(name = "nombre")
     private String Nombre;
-    public com.DIGIS01.ACardenasProgramacionNCapas.JPA.Pais pais;
+    
+    @ManyToOne
+    @JoinColumn(name = "idpais")
+    public Pais pais;
 
     public Estado() {
     }
