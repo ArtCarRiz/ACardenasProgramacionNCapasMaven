@@ -85,13 +85,14 @@ public class Direccion {
         return NumeroExterior;
     }
 
-//    public Colonia getColonia() {
-//        return colonia;
-//    }
-//
-//    public void setColonia(Colonia colonia) {
-//        this.colonia = colonia;
-//    }
+    public Colonia getColonia() {
+        return colonia;
+    }
+
+    public void setColonia(Colonia colonia) {
+        this.colonia = colonia;
+    }
+    
     public com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario getUsuario() {
         return usuario;
     }

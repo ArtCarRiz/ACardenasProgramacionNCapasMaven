@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.Mapping;
 
@@ -40,11 +41,8 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
             TypedQuery<Usuario> queryAlumno = entityManager.createQuery("FROM Usuario", Usuario.class);
             List<Usuario> usuario = queryAlumno.getResultList();
-            // mapper ...
-            ModelMapper modelMapper = new ModelMapper();
 
-//            List<com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario> entity =  usuario;
-//            
+            ModelMapper modelMapper = new ModelMapper();
             Type listType = new TypeToken<List<com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario>>() {
             }.getType();
 
@@ -145,16 +143,29 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
     }
 
     @Override
+    @Transactional
     public Result GetById(int identificador) {
         Result result = new Result();
 
         try { //usa find.
-            String consulta = "SELECT u FROM Usuario u";
-            TypedQuery<Usuario> query = entityManager.createQuery(consulta, Usuario.class);
-            query.setParameter("u", identificador);
+//            String consulta = "SELECT u FROM Usuario u";
+//            TypedQuery<Usuario> query = entityManager.createQuery(consulta, Usuario.class);
+//            query.setParameter("u", identificador);
+//            result.object = query.getSingleResult();
 
-            result.object = query.getSingleResult();
-//            return query.getSingleResult();
+            Usuario usuarioEntity = entityManager.find(Usuario.class, identificador);
+
+            if (usuarioEntity != null) {
+
+                ModelMapper modelMapper = new ModelMapper();
+                com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario usuarioML = modelMapper.map(usuarioEntity, 
+                        com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario.class);
+                result.object = usuarioML;
+            } else {
+                result.correct = false;
+            }
+
+            result.correct = true;
 
         } catch (Exception e) {
             result.correct = false;
@@ -172,15 +183,147 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
         try {
 
-            String jpql = "DELETE FROM Usuario e WHERE e.IdUsuario = :IdUsuario";
-            Query query = entityManager.createQuery(jpql);
-            query.setParameter("IdUsuario", identificador);
+//            String jpql = "DELETE FROM Usuario e WHERE e.IdUsuario = :IdUsuario";
+//            Query query = entityManager.createQuery(jpql);
+//            query.setParameter("IdUsuario", identificador);
+//
+//            int eliminados = query.executeUpdate(); 
+////            entityManager.getTransaction().commit();
+            com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario usuarioEntity = entityManager.find(com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario.class, identificador);
 
-            int eliminados = query.executeUpdate(); 
-            entityManager.getTransaction().commit();
+            entityManager.remove(usuarioEntity);
+            result.correct = true;
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public Result AddDireccion(com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion direccion, int identificador) {
+        Result result = new Result();
+
+        try {
+
+            ModelMapper modelMapper = new ModelMapper();
+            com.DIGIS01.ACardenasProgramacionNCapas.JPA.Direccion direccionjpa = modelMapper.map(direccion, com.DIGIS01.ACardenasProgramacionNCapas.JPA.Direccion.class);
+
+            Usuario usuariojpa = new Usuario();
+            usuariojpa.setIdUsuario(identificador);
+            direccionjpa.setUsuario(usuariojpa);
+
+            entityManager.persist(direccionjpa);
+            result.correct = true;
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public Result DeleteDireccion(int identificador) {
+        Result result = new Result();
+
+        try {
+
+            com.DIGIS01.ACardenasProgramacionNCapas.JPA.Direccion direccionEntity = entityManager.find(com.DIGIS01.ACardenasProgramacionNCapas.JPA.Direccion.class, identificador);
+
+            entityManager.remove(direccionEntity);
+            result.correct = true;
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
+    public Result GetByIdDireccion(int identificador) {
+        Result result = new Result();
+
+        try {
+
+            com.DIGIS01.ACardenasProgramacionNCapas.JPA.Direccion direccionEntity = entityManager.find(com.DIGIS01.ACardenasProgramacionNCapas.JPA.Direccion.class, identificador);
+
+            ModelMapper modelMapper = new ModelMapper();
+            com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion direccionML = modelMapper.map(direccionEntity, com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion.class);
+            result.object = direccionML;
+
+            result.correct = true;
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public Result UpdateDireccion(com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion direccionML, int identificador) {
+        Result result = new Result();
+
+        try {
             
-            if (eliminados != 0) {
+            Direccion direccionAntigua = entityManager.find(Direccion.class, identificador);
+            
+            direccionAntigua.setCalle(direccionML.getCalle());
+            direccionAntigua.setNumeroInterior(direccionML.getNumeroInterior());
+            direccionAntigua.setNumeroExterior(direccionML.getNumeroExterior());
+            direccionAntigua.colonia = new Colonia();
+            direccionAntigua.colonia.setIdColonia(direccionML.getColonia().getIdColonia());
+            
+            
+            
+            //sin esto va a querer hacer insert en ves de update
+//            direccionAntigua.setIdDireccion(identificador);
+
+            //
+            entityManager.merge(direccionAntigua);
+            result.correct = true;
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public Result UpdateUsuario(com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario usuario) {
+        Result result = new Result();
+
+        try {
+
+            Usuario usuarioBD = entityManager.find(Usuario.class, usuario.getIdUsuario());
+            if (usuario != null) { // alumno si existe
+                //ML -> JPA
+                ModelMapper modelMapper = new ModelMapper();
+                modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+                com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario usuarioJpa = modelMapper.map(usuario, com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario.class);
+                
+                usuarioJpa.Direcciones = usuarioBD.Direcciones;
+                entityManager.merge(usuarioJpa);
                 result.correct = true;
+
             }
 
         } catch (Exception e) {

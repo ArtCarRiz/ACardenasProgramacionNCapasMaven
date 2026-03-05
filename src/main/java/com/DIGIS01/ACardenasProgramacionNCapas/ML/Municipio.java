@@ -12,7 +12,7 @@ public class Municipio {
 
     private int IdMunicipio;
     private String Nombre;
-    public com.DIGIS01.ACardenasProgramacionNCapas.ML.Estado estado;
+    public Estado estado;
 //    public ML.Estado estado;
     
     public Municipio(){

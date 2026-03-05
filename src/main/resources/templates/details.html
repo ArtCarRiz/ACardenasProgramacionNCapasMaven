@@ -74,11 +74,11 @@
                                             <input id="Username" class="form-control" placeholder="Nombre de usuario" th:field="*{Username}">
                                             <span class="text-danger" th:if="${#fields.hasErrors('Username')}" th:errors = "*{Username}"></span>
                                         </div>
-<!--                                        <div class="col-md-6">
-                                            <div >
-                                                <input id="Password" type="password" class="form-control" placeholder="Contraseña" th:field="*{Password}">
-                                            </div>
-                                        </div>-->
+                                        <!--                                        <div class="col-md-6">
+                                                                                    <div >
+                                                                                        <input id="Password" type="password" class="form-control" placeholder="Contraseña" th:field="*{Password}">
+                                                                                    </div>
+                                                                                </div>-->
 
                                     </div>
 
@@ -117,13 +117,13 @@
                             </div>
                             <div class="row m-4" >
                                 <div class="col-md-4" style="display: flex; justify-content: center;">
-                                <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Usuario</button>
+                                    <button type="button" th:onclick="|AbrirModal('${usuario.idUsuario}')|"  class="btn btn-warning" >Usuario</button>
                                 </div>
                                 <div class="col-md-4" style="display: flex; justify-content: center;">
-                                <button type="button" class="btn btn-warning" >Imagen</button>
+                                    <button type="button" class="btn btn-warning" >Imagen</button>
                                 </div>
                                 <div class="col-md-4" style="display: flex; justify-content: center;">
-                                <button type="button" class="btn btn-warning" >Contraseña</button>
+                                    <button type="button" class="btn btn-warning" >Contraseña</button>
                                 </div>
                             </div>
                         </div>
@@ -278,7 +278,7 @@
         </div>
     </form>
 
-    <form  method="post" th:action="@{/usuario/update/{IdDireccion}/{IdUsuario}(IdDireccion=${idDireccionSeleccionada}, IdUsuario=${usuario.IdUsuario})}" th:object="${direccion}">
+    <form id="actualizarDireccion" method="post" th:action="@{/usuario/update/{IdDireccion}/{IdUsuario}(IdDireccion=${direccion.IdDireccion}, IdUsuario=${usuario.IdUsuario})}" th:object="${direccion}">
         <div class="modal fade" id="formUpdate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
             <div class="modal-dialog  modal-xl">
                 <div class="modal-content">
@@ -334,12 +334,12 @@
 
                                 </div>
                             </div>
-
+                            <input type="hidden" th:field="*{IdDireccion}" id="idDireccionModal" />
                             <input type="hidden" name="IdUsuario" th:value="${usuario.IdUsuario}" />
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Agregar direccion</button>
+                        <button type="submit" class="btn btn-primary">Actualizar direccion</button>
                     </div>
                 </div>
             </div>
@@ -464,7 +464,7 @@
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert("No se pudo procesar la tarea");
+                    alert("No se pudo procesar la tarea, modal");
                 }
             });
         }
@@ -486,6 +486,13 @@
 
     <script>
 
+        var modalEditar;
+
+        $(document).ready(function () {
+            
+            modalEditar = new bootstrap.Modal(document.getElementById('formUpdate'));
+        });
+
         function AbrirModalEditar(idDireccion, idUsuario) {
             $.ajax({
                 url: "/usuario/GetByIdDireccion/" + idDireccion,
@@ -493,43 +500,50 @@
                 dataType: 'json',
                 success: function (result) {
                     if (result.correct) {
-                        var direccion = result.object; 
+//                        console.log("Objeto completo recibido:", result.object);
+                        var direccion = result.object;
 
-                        // 1. Llenar campos de texto
-                        $("#calle").val(direccion.calle);
-                        $("#numexterior").val(direccion.numeroExterior);
-                        $("#numinterior").val(direccion.numeroInterior);
-                        $("#codigopostal").val(direccion.colonia.codigoPostal);
+                        console.log(direccion.IdDireccion);
+                        console.log(idDireccion);
+                        $("#calle").val(direccion.Calle);
+                        $("#numexterior").val(direccion.NumeroExterior);
+                        $("#numinterior").val(direccion.NumeroInterior);
+                        $("#codigopostal").val(direccion.colonia.CodigoPostal);
 
-                        
-                        $("#ddlpais").val(direccion.colonia.municipio.estado.pais.idPais).trigger('change');
+                        var idPais = direccion.colonia.municipio.estado.pais.IdPais;
 
-                        
-                        setTimeout(function () {
-                            $("#ddlestado").val(direccion.colonia.municipio.estado.idEstado).trigger('change');
+                        if (idPais) {
+                            $("#ddlpais").val(idPais).trigger('change');
 
-                            
                             setTimeout(function () {
-                                $("#ddlmunicipio").val(direccion.colonia.municipio.idMunicipio).trigger('change');
+                                var idEstado = direccion.colonia.municipio.estado.IdEstado;
+                                if (idEstado) {
+                                    $("#ddlestado").val(idEstado).trigger('change');
 
-                                
-                                setTimeout(function () {
-                                    $("#ddlcolonia").val(direccion.colonia.idColonia);
-                                }, 500);
-                            }, 500);
-                        }, 500);
+                                    setTimeout(function () {
+                                        var idMun = direccion.colonia.municipio.IdMunicipio;
+                                        if (idMun) {
+                                            $("#ddlmunicipio").val(idMun).trigger('change');
 
-                        
-                        $("#formUpdate").attr("action", "/usuario/update/" + idDireccion + "/" + idUsuario);
+                                            setTimeout(function () {
+                                                $("#ddlcolonia").val(direccion.colonia.IdColonia);
+                                            }, 300);
+                                        }
+                                    }, 300);
+                                }
+                            }, 300);
+                        }
 
-                        
-                        var myModal = new bootstrap.Modal(document.getElementById('EditarDireccion'));
-                        myModal.show();
+                        $("#actualizarDireccion").attr("action", "/usuario/update/" + idDireccion + "/" + idUsuario);
+
+                        modalEditar.show();
+
                     } else {
-                        alert("Error al consultar la información: " + result.errorMessage);
+                        alert("Error: " + result.errorMessage);
                     }
                 },
-                error: function () {
+                error: function (jqXHR) {
+                    console.table(jqXHR);
                     alert("Error en la petición al servidor");
                 }
             });
@@ -537,7 +551,7 @@
     </script>
 
     <script>
-        
+
         const input = document.getElementById('imagenFile');
         const preview = document.getElementById('previewImage');
 
@@ -564,7 +578,7 @@
             $("#ddlpais").change(function () {
                 console.log("Ya cambie");
                 var IdPais = $("#ddlpais").val();
-                if (IdPais != 0) {
+                if (IdPais != 0 && IdPais != null && IdPais != "null") {
                     $.ajax({
                         url: "/usuario/getEstadosByPais/" + IdPais,
                         type: 'GET',
@@ -579,7 +593,8 @@
                             });
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            alert("No se pudo procesar la tarea");
+                            console.table(jqXHR);
+//                            alert("No se pudo procesar la tarea, pais");
                         }
                     });
                 } else {
@@ -619,7 +634,8 @@
                             });
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            alert("No se pudo procesar la tarea, estado");
+                            console.table(jqXHR);
+//                            alert("No se pudo procesar la tarea, estado");
                         }
                     });
                 } else {
@@ -667,7 +683,8 @@
                             });
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            alert("No se pudo procesar la tarea, municipio");
+                            console.table(jqXHR);
+//                            alert("No se pudo procesar la tarea, municipio");
                         }
                     });
                 } else {

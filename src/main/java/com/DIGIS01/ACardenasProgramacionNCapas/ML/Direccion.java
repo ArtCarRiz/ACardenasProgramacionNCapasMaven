@@ -14,7 +14,7 @@ public class Direccion {
     private String Calle;
     private String NumeroInterior;
     private String NumeroExterior;
-    public com.DIGIS01.ACardenasProgramacionNCapas.ML.Colonia colonia;
+    public Colonia colonia;
 //    public ML.Colonia colonia;
 
     

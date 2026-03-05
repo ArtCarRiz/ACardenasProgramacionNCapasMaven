@@ -4,6 +4,7 @@
  */
 package com.DIGIS01.ACardenasProgramacionNCapas.DAO;
 
+import com.DIGIS01.ACardenasProgramacionNCapas.ML.Direccion;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
 
@@ -17,4 +18,9 @@ public interface IUsuarioJPA {
     Result Add(Usuario usuario);
     Result GetById(int identificador);
     Result DeleteUsuario (int identificador);
+    Result AddDireccion (Direccion direccion, int identificador);
+    Result DeleteDireccion (int identificador);
+    Result GetByIdDireccion(int identificador);
+    Result UpdateDireccion (Direccion direccion, int identificador);
+    Result UpdateUsuario (Usuario usuario);
 }

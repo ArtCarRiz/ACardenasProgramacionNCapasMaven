@@ -13,7 +13,7 @@ public class Colonia {
     private int IdColonia;
     private String Nombre;
     private String CodigoPostal;
-    public com.DIGIS01.ACardenasProgramacionNCapas.ML.Municipio municipio;
+    public Municipio municipio;
 //    public ML.Municipio municipio;
 
     public Colonia() {

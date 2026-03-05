@@ -12,7 +12,7 @@ public class Estado {
 
     private int IdEstado;
     private String Nombre;
-    public com.DIGIS01.ACardenasProgramacionNCapas.ML.Pais pais;
+    public Pais pais;
 
     public Estado() {
     }

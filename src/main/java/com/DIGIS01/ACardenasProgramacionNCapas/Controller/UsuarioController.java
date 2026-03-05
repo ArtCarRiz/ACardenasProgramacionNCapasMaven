@@ -222,7 +222,7 @@ public class UsuarioController {
         Result result = new Result();
 
         try {
-            result = usuarioDAOImplementation.AddDireccion(direccion, idUsuario);
+            result = usuarioDAOJPAImplementation.AddDireccion(direccion, idUsuario);
 
             if (result.correct) {
                 redirectAttributes.addFlashAttribute("mensaje", "Dirección agregada correctamente");
@@ -257,7 +257,7 @@ public class UsuarioController {
     public String DeleteDireccion(@PathVariable("IdUsuario") int identificador, @PathVariable("IdDireccion") int identificadorDireccion, RedirectAttributes redirectAttributes) {
         Result result = new Result();
 
-        result = usuarioDAOImplementation.DeleteDireccion(identificador, identificadorDireccion);
+        result = usuarioDAOJPAImplementation.DeleteDireccion(identificadorDireccion);
 
         if (result.correct == true) {
             System.out.println("Borrado con exito");
@@ -276,7 +276,7 @@ public class UsuarioController {
         try {
             direccion.setIdDireccion(IdDireccion);
 
-            result = usuarioDAOImplementation.UpdateDireccion(direccion);
+            result = usuarioDAOJPAImplementation.UpdateDireccion(direccion, direccion.getIdDireccion());
 
             if (result.correct) {
                 redirectAttributes.addFlashAttribute("mensaje", "Dirección actualizada correctamente");
@@ -317,7 +317,7 @@ public class UsuarioController {
             }
 
             // Ejecutar la actualización
-            result = usuarioDAOImplementation.UpdateUsuario(usuario);
+            result = usuarioDAOJPAImplementation.UpdateUsuario(usuario);
 
             if (!result.correct) {
                 return "redirect:/usuario/details/" + identificador;
@@ -351,7 +351,7 @@ public class UsuarioController {
     public Result GetByIdDireccion(@PathVariable("IdDireccion") int identificador, Model model) {
         Result result = new Result();
         try {
-            result = usuarioDAOImplementation.GetByIdDireccion(identificador);
+            result = usuarioDAOJPAImplementation.GetByIdDireccion(identificador);
 
         } catch (Exception e) {
             result.correct = false;
