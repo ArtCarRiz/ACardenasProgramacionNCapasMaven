@@ -293,28 +293,28 @@ public class UsuarioController {
     }
 
     @PostMapping("/update/{IdUsuario}")
-    public String UpdateUsuario(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @PathVariable("IdUsuario") int identificador, @RequestParam("imagenFile") MultipartFile imagenFile, Model model) {
+    public String UpdateUsuario(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @PathVariable("IdUsuario") int identificador, Model model) {
         Result result = new Result();
         try {
-            //  Verificar si se subió un archivo nuevo
-            if (imagenFile != null && !imagenFile.isEmpty()) {
-                String nombreArchivo = imagenFile.getOriginalFilename();
-                String extension = nombreArchivo.substring(nombreArchivo.lastIndexOf(".") + 1).toLowerCase();
-
-                if (extension.equals("jpg") || extension.equals("png") || extension.equals("jpeg")) {
-                    // Leer bytes y convertir a Base64
-                    byte[] fileContent = imagenFile.getBytes();
-                    String encodedString = Base64.getEncoder().encodeToString(fileContent);
-                    usuario.setImagen(encodedString);
-                }
-            } else {
-
+//            //  Verificar si se subió un archivo nuevo
+//            if (imagenFile != null && !imagenFile.isEmpty()) {
+//                String nombreArchivo = imagenFile.getOriginalFilename();
+//                String extension = nombreArchivo.substring(nombreArchivo.lastIndexOf(".") + 1).toLowerCase();
+//
+//                if (extension.equals("jpg") || extension.equals("png") || extension.equals("jpeg")) {
+//                    // Leer bytes y convertir a Base64
+//                    byte[] fileContent = imagenFile.getBytes();
+//                    String encodedString = Base64.getEncoder().encodeToString(fileContent);
+//                    usuario.setImagen(encodedString);
+//                }
+//            } else {
+//
                 result = usuarioDAOImplementation.GetById(identificador);
                 if (result.correct) {
                     Usuario usuarioanterior = (Usuario) result.object;
                     usuario.setImagen(usuarioanterior.getImagen());
                 }
-            }
+//            }
 
             // Ejecutar la actualización
             result = usuarioDAOJPAImplementation.UpdateUsuario(usuario);
@@ -711,7 +711,7 @@ public class UsuarioController {
         Result result = new Result();
 
         try {
-            result = usuarioDAOImplementation.UpdateEstatus(idUsuario, estatus);
+            result = usuarioDAOJPAImplementation.UpdateEstatus(idUsuario, estatus);
         } catch (Exception e) {
             result.correct = false;
             result.errorMessage = e.getLocalizedMessage();

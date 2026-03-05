@@ -39,8 +39,8 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
         try {
 
-            TypedQuery<Usuario> queryAlumno = entityManager.createQuery("FROM Usuario", Usuario.class);
-            List<Usuario> usuario = queryAlumno.getResultList();
+            TypedQuery<Usuario> queryUsuario = entityManager.createQuery("FROM Usuario", Usuario.class);
+            List<Usuario> usuario = queryUsuario.getResultList();
 
             ModelMapper modelMapper = new ModelMapper();
             Type listType = new TypeToken<List<com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario>>() {
@@ -326,6 +326,29 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
             }
 
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public Result UpdateEstatus(int identificador, int estatus) {
+        Result result = new Result();
+
+        try {
+            
+            Usuario usuariojpa = entityManager.find(Usuario.class, identificador);
+            usuariojpa.setIdUsuario(identificador);
+            usuariojpa.setEstatus(estatus);
+            
+            entityManager.merge(usuariojpa);
+            result.correct = true;
+            
         } catch (Exception e) {
             result.correct = false;
             result.errorMessage = e.getLocalizedMessage();

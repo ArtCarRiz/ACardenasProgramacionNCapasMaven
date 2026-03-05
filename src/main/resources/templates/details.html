@@ -173,6 +173,39 @@
         </div>
 
     </body>
+<!--    method="post" th:action="@{/usuario/update/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" th:object="${usuario}" termina de implemntar el updateImagen-->
+        <form  enctype="multipart/form-data">
+        <div class="modal fade" id="Agregarimagen" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
+            <div class="modal-dialog  modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Detalles de Usuario</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" >
+                        <div>
+
+                            <div class="row m-4">
+                                <div class="col-md-4 text-center d-flex flex-column align-items-center">
+                                    <div class="card p-3 w-100 h-100">
+                                        <label class="form-label fw-bold">Imagen</label>
+                                        <input type="file" class="form-control mb-2" name="imagenFile" id="imagenFile"  >
+                                        <img id="previewImage" style="max-width: 300px; max-height: auto" class="mx-auto" src="#"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Actualizar imagen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    
     <form method="post" th:action="@{/usuario/update/{IdUsuario}(IdUsuario=${usuario.IdUsuario})}" th:object="${usuario}" enctype="multipart/form-data">
         <div class="modal fade" id="Agregar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
             <div class="modal-dialog  modal-xl">
@@ -258,7 +291,7 @@
 
 
                             </div>
-                            <div class="row m-4">
+<!--                            <div class="row m-4">
                                 <div class="col-md-4 text-center d-flex flex-column align-items-center">
                                     <div class="card p-3 w-100 h-100">
                                         <label class="form-label fw-bold">Imagen</label>
@@ -266,7 +299,7 @@
                                         <img id="previewImage" style="max-width: 300px; max-height: auto" class="mx-auto" src="#"/>
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
 
                         </div>
                     </div>
