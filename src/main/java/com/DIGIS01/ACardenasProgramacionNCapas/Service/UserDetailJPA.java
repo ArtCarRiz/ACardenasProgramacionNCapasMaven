@@ -35,7 +35,6 @@ public class UserDetailJPA implements UserDetailsService {
         Usuario usuario = (Usuario) result.object;
         return User.withUsername(usuario.getNombre())
                 .password(usuario.getPassword())
-                .roles(usuario.Rol.getNombreRol())
                 .disabled((usuario.getEstatus() == 0) ? true : false) 
                 .build();
     }
