@@ -32,14 +32,21 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain secuFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer -> configurer
-                .requestMatchers("/usuario/**")
+                //                .requestMatchers("/usuario/**")
+
+                .requestMatchers("/usuario/**", "/css/**", "/js/**", "/images/**", "/webjars/**")
                 .hasAnyRole("Ingeniero", "Residente", "Licenciado")
                 .anyRequest().authenticated())
-                .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                )
+                //                .csrf(csrf -> csrf
+                //                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                //                )
                 .formLogin(form -> form
-                .defaultSuccessUrl("/usuario"))
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/usuario", true)
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .permitAll())
                 .userDetailsService(userDetailJPA);
 
         return http.build();
