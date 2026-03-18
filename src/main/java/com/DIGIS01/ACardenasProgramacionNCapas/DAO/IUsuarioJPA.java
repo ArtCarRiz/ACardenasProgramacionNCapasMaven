@@ -24,5 +24,4 @@ public interface IUsuarioJPA {
     Result UpdateDireccion (Direccion direccion, int identificador);
     Result UpdateUsuario (Usuario usuario);
     Result UpdateEstatus (int identificador, int estatus);
-    Result GetByEmail(String UserName);
 }

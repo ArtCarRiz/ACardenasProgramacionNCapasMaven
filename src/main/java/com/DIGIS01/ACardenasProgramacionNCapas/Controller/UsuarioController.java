@@ -94,13 +94,18 @@ public class UsuarioController {
 
     @GetMapping
     public String Index(Model model) {
-        Result result = usuarioDAOJPAImplementation.GetAll();    
+        Result result = usuarioDAOJPAImplementation.GetAll();
+//        Result result = usuarioDAOImplementation.GetAll();
+
         model.addAttribute("usuarios", result.objects);
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+//        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+
         model.addAttribute("usuariobusqueda", new Usuario());
 
         return "usuario";
+
     }
 
     @PostMapping
