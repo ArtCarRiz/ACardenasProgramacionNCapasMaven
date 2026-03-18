@@ -158,7 +158,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
             if (usuarioEntity != null) {
 
                 ModelMapper modelMapper = new ModelMapper();
-                com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario usuarioML = modelMapper.map(usuarioEntity, 
+                com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario usuarioML = modelMapper.map(usuarioEntity,
                         com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario.class);
                 result.object = usuarioML;
             } else {
@@ -279,20 +279,17 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
         Result result = new Result();
 
         try {
-            
+
             Direccion direccionAntigua = entityManager.find(Direccion.class, identificador);
-            
+
             direccionAntigua.setCalle(direccionML.getCalle());
             direccionAntigua.setNumeroInterior(direccionML.getNumeroInterior());
             direccionAntigua.setNumeroExterior(direccionML.getNumeroExterior());
             direccionAntigua.colonia = new Colonia();
             direccionAntigua.colonia.setIdColonia(direccionML.getColonia().getIdColonia());
-            
-            
-            
+
             //sin esto va a querer hacer insert en ves de update
 //            direccionAntigua.setIdDireccion(identificador);
-
             //
             entityManager.merge(direccionAntigua);
             result.correct = true;
@@ -319,7 +316,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
                 ModelMapper modelMapper = new ModelMapper();
                 modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
                 com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario usuarioJpa = modelMapper.map(usuario, com.DIGIS01.ACardenasProgramacionNCapas.JPA.Usuario.class);
-                
+
                 usuarioJpa.Direcciones = usuarioBD.Direcciones;
                 entityManager.merge(usuarioJpa);
                 result.correct = true;
@@ -341,14 +338,40 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
         Result result = new Result();
 
         try {
-            
+
             Usuario usuariojpa = entityManager.find(Usuario.class, identificador);
             usuariojpa.setIdUsuario(identificador);
             usuariojpa.setEstatus(estatus);
-            
+
             entityManager.merge(usuariojpa);
             result.correct = true;
-            
+
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+        }
+
+        return result;
+    }
+
+    @Override
+    public Result GetByEmail(String Username) {
+        Result result = new Result();
+
+        try {
+            TypedQuery<Usuario> queryUsuario = entityManager.createQuery("FROM Usuario WHERE Username = :pUsername", Usuario.class);
+            queryUsuario.setParameter("pUsername", Username);
+            Usuario usuario = queryUsuario.getSingleResult();
+
+            /*JPA -> ML*/
+            ModelMapper modelMapper = new ModelMapper();
+           
+            com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario GetByUser = modelMapper.map(usuario, com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario.class);
+           
+            result.object = GetByUser;
+            result.correct = true;
+
         } catch (Exception e) {
             result.correct = false;
             result.errorMessage = e.getLocalizedMessage();
