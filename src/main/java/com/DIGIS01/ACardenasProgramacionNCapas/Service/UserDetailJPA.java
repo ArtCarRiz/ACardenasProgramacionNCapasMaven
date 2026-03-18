@@ -30,7 +30,7 @@ public class UserDetailJPA implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Result result = new Result();
         
-        result = usuarioDAOJPAImplementation.GetByEmail(username);
+//        result = usuarioDAOJPAImplementation.GetByEmail(username);
         
         Usuario usuario = (Usuario) result.object;
         return User.withUsername(usuario.getNombre())
