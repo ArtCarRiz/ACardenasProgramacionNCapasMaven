@@ -5,19 +5,26 @@
 package com.DIGIS01.ACardenasProgramacionNCapas.Controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
  * @author digis
  */
 @Controller
-//@RequestMapping("login")
+@RequestMapping("/login")
 public class LoginController {
 
-    @GetMapping("/login")
-    public String login() {
+    @GetMapping
+    public String login(@RequestParam(value = "error", required = false) String error, Model model) {
+        
+        if (error != null) {
+            model.addAttribute("errorlogin", error);
+        }
+        
         return "login"; // Nombre de la plantilla Thymeleaf (login.html)
     }
 }

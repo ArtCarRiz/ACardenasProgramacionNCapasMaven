@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
-<html data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<html data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymelaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
     <head>
         <title>j</title>
         <meta charset="UTF-8">
@@ -12,10 +15,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
-    <body>
-
-
-
+    
+    <body layout:fragment="body">
         <div class="container">
 
             <div>
@@ -79,7 +80,7 @@
                     <div class="col-md-3" >
                         <br/>
                         <!--th:attr="data-target='#modal-toTrash'+${usuario.IdUsuario}"-->
-                        <a th:href="@{/usuario/form}" class="btn btn-primary">Agregar nuevo usuario</a>
+                        <a sec:authorize="hasRole('Residente')" th:href="@{/usuario/form}" class="btn btn-primary">Agregar nuevo usuario</a>
 
                         <br/>
                     </div>
@@ -289,7 +290,7 @@
                     error: function (e) {
 
 //                        checkbox.prop('checked', !checkbox.is(':checked'));
-                        
+
                     },
                     complete: function () {
                         // Re-habilitamos 

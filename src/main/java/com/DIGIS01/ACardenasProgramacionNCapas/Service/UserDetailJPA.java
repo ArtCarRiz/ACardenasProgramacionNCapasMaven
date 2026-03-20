@@ -7,11 +7,15 @@ package com.DIGIS01.ACardenasProgramacionNCapas.Service;
 import com.DIGIS01.ACardenasProgramacionNCapas.DAO.UsuarioDAOJPAImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.support.RequestContext;
 
 /**
  *
@@ -28,12 +32,16 @@ public class UserDetailJPA implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         Result result = new Result();
-        
-//        result = usuarioDAOJPAImplementation.GetByEmail(username);
-        
+        result = usuarioDAOJPAImplementation.GetByUserName(username);
         Usuario usuario = (Usuario) result.object;
-        return User.withUsername(usuario.getNombre())
+        
+        ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = request.getRequest().getSession(true);
+        session.setAttribute("id", usuario.getIdUsuario());
+        
+        return User.withUsername(usuario.getUsername())
                 .password(usuario.getPassword())
                 .roles(usuario.Rol.getNombreRol())
                 .disabled((usuario.getEstatus() == 0) ? true : false) 

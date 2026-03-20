@@ -17,21 +17,28 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;" >
             <div class="card border border-dark" style="width: 18rem;">
                 <div class="card-body">
-                    <form th:action="@{/usuario}" method="post">
+
+                    <div th:if="${param.error}" class="alert alert-danger">
+                        <span>
+                            Usuario o contraseña incorrecto
+                        </span>
+                    </div>
+
+                    <form th:action="@{/login}" method="post">
                         <div style="text-align: center;">
-                        <h5 class="card-title row m-4" >Inicio de sesion</h5>
+                            <h5 class="card-title row m-4" >Inicio de sesion</h5>
                         </div>
-                        
+
                         <div class="card-title row m-4">
-                        <p class="card-text">Nombre de usuario</p>
-                        <input class="form-control" type="text" name="username"></input>
+                            <p class="card-text">Nombre de usuario</p>
+                            <input class="form-control" type="text" name="username" ></input>
                         </div>
-                        
+
                         <div class="card-title row m-4">
-                        <p class="card-text">Contraseña</p>
-                        <input type="password" name="password" class="form-control"></input>
+                            <p class="card-text">Contraseña</p>
+                            <input type="password" name="password" class="form-control"></input>
                         </div>
-                        
+
                         <button type="submit" class="btn btn-primary row m-4">Iniciar</button>
                     </form>
                 </div>

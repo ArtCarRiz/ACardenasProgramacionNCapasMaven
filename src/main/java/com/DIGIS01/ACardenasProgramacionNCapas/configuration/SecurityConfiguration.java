@@ -4,6 +4,7 @@
  */
 package com.DIGIS01.ACardenasProgramacionNCapas.configuration;
 
+import com.DIGIS01.ACardenasProgramacionNCapas.Service.CustomAuthenticationSuccessHandler;
 import com.DIGIS01.ACardenasProgramacionNCapas.Service.UserDetailJPA;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +25,11 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 public class SecurityConfiguration {
 
     private final UserDetailJPA userDetailJPA;
+    private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
 
-    public SecurityConfiguration(UserDetailJPA userDetailJPA1) {
+    public SecurityConfiguration(UserDetailJPA userDetailJPA1, CustomAuthenticationSuccessHandler authenticationSuccessHandler1) {
         this.userDetailJPA = userDetailJPA1;
+        this.authenticationSuccessHandler = authenticationSuccessHandler1;
     }
 
     @Bean
@@ -43,7 +46,8 @@ public class SecurityConfiguration {
                 .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/usuario", true)
+//                .defaultSuccessUrl("/usuario", true)
+                .successHandler(authenticationSuccessHandler)
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .permitAll())
