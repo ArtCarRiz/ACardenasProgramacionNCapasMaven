@@ -31,7 +31,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             response.sendRedirect("/usuario");
         } else {
             Integer id = (Integer) request.getSession().getAttribute("id");
-            String username = authentication.getName();
+//            String username = authentication.getName();
             response.sendRedirect("/usuario/details/" + id);
         }
     }

@@ -12,17 +12,17 @@
     </head>
 
     <header>
-        <nav class="nav">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-            <a class="nav-link" href="#">Link</a>
-            <a class="nav-link" href="#">Link</a>
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+        <nav class="nav nav-pills nav-fill">
+            <a class="nav-link" aria-current="page" href="#">Inicio</a>
+            <a class="nav-link" href="#">Agregar usuario</a>
             <a class="nav-link">Bienvenido <div sec:authentication="name"></div></a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
+            </form>
         </nav>
-        <div>
+<!--        <div>
             <div sec:authentication="principal"></div>
-            <div sec:authorize="isAuthenticated()"> * Esto solo será visible para usuarios logeados * </div>
-        </div>
+        </div>-->
     </header>
 
     <body layout:fragment="body">

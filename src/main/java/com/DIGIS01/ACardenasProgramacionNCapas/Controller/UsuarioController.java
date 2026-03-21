@@ -54,6 +54,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -88,11 +89,12 @@ public class UsuarioController {
 
     @Autowired
     private ValidationService validationService;
-    
+
     @Autowired
     private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
 
     @GetMapping
+//    @PreAuthorize("hasRole('Ingeniero')")
     public String Index(Model model) {
         Result result = usuarioDAOJPAImplementation.GetAll();
 //        Result result = usuarioDAOImplementation.GetAll();
@@ -309,11 +311,11 @@ public class UsuarioController {
 //                }
 //            } else {
 //
-                result = usuarioDAOImplementation.GetById(identificador);
-                if (result.correct) {
-                    Usuario usuarioanterior = (Usuario) result.object;
-                    usuario.setImagen(usuarioanterior.getImagen());
-                }
+            result = usuarioDAOImplementation.GetById(identificador);
+            if (result.correct) {
+                Usuario usuarioanterior = (Usuario) result.object;
+                usuario.setImagen(usuarioanterior.getImagen());
+            }
 //            }
 
             // Ejecutar la actualización

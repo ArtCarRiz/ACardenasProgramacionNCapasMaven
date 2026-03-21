@@ -25,6 +25,6 @@ public class LoginController {
             model.addAttribute("errorlogin", error);
         }
         
-        return "login"; // Nombre de la plantilla Thymeleaf (login.html)
+        return "login"; 
     }
 }
