@@ -23,7 +23,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
  */
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     private final UserDetailJPA userDetailJPA;
@@ -37,8 +37,9 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain secuFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer -> configurer
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/usuario/**", "/css/**", "/js/**", "/images/**", "/webjars/**")
-//                .requestMatchers("/usuario/**", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                //                .requestMatchers("/usuario/**", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .hasAnyRole("Ingeniero", "Residente", "Licenciado")
                 .anyRequest().authenticated())
                 //                .csrf(csrf -> csrf
@@ -47,7 +48,7 @@ public class SecurityConfiguration {
                 .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-//                .defaultSuccessUrl("/usuario", true)
+                //                .defaultSuccessUrl("/usuario", true)
                 .successHandler(authenticationSuccessHandler)
                 .usernameParameter("username")
                 .passwordParameter("password")

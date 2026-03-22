@@ -18,6 +18,7 @@ import com.DIGIS01.ACardenasProgramacionNCapas.ML.Estado;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Rol;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
+import com.DIGIS01.ACardenasProgramacionNCapas.Service.CustomUserDetails;
 import com.DIGIS01.ACardenasProgramacionNCapas.Service.ValidationService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -55,6 +56,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -94,7 +97,7 @@ public class UsuarioController {
     private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
 
     @GetMapping
-//    @PreAuthorize("hasRole('Ingeniero')")
+    @PreAuthorize("hasRole('Ingeniero')")
     public String Index(Model model) {
         Result result = usuarioDAOJPAImplementation.GetAll();
 //        Result result = usuarioDAOImplementation.GetAll();
@@ -363,8 +366,14 @@ public class UsuarioController {
         return result;
     }
 
+    @PreAuthorize("hasRole('Ingeniero') or #identificador == principal.idUsuario")
     @GetMapping("/details/{IdUsuario}")
     public String Details(@PathVariable("IdUsuario") int identificador, Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        System.out.println("ID en Sesión: " + user.getIdUsuario());
+        System.out.println("ID en URL: " + identificador);
+        System.out.println("Roles: " + auth.getAuthorities());
         try {
             Result resultUsuario = usuarioDAOImplementation.GetById(identificador);
 

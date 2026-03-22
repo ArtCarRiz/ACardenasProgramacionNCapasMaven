@@ -19,21 +19,24 @@ import org.springframework.stereotype.Component;
  * @author artur
  */
 @Component
-public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler{
-    
+public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
-        
+            Authentication authentication) throws IOException, ServletException {
+
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
         if (roles.contains("ROLE_Ingeniero")) {
             response.sendRedirect("/usuario");
         } else {
-            Integer id = (Integer) request.getSession().getAttribute("id");
-//            String username = authentication.getName();
+//            Integer id = (Integer) request.getSession().getAttribute("id");
+
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            int id = userDetails.getIdUsuario();
+
             response.sendRedirect("/usuario/details/" + id);
         }
     }
-    
+
 }

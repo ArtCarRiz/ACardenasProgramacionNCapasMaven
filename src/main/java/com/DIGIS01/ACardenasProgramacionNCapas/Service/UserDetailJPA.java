@@ -8,6 +8,7 @@ import com.DIGIS01.ACardenasProgramacionNCapas.DAO.UsuarioDAOJPAImplementation;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Result;
 import com.DIGIS01.ACardenasProgramacionNCapas.ML.Usuario;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,16 +37,26 @@ public class UserDetailJPA implements UserDetailsService {
         Result result = new Result();
         result = usuarioDAOJPAImplementation.GetByUserName(username);
         Usuario usuario = (Usuario) result.object;
-        
-        ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpSession session = request.getRequest().getSession(true);
-        session.setAttribute("id", usuario.getIdUsuario());
-        
-        return User.withUsername(usuario.getUsername())
-                .password(usuario.getPassword())
-                .roles(usuario.Rol.getNombreRol())
-                .disabled((usuario.getEstatus() == 0) ? true : false) 
-                .build();
-    }
 
-}
+        if (usuario == null) {
+            throw new UsernameNotFoundException("Usuario no encontrado");
+        }
+
+//        ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+//        HttpSession session = request.getRequest().getSession(true);
+//        session.setAttribute("id", usuario.getIdUsuario());
+//        return User.withUsername(usuario.getUsername())
+//                .password(usuario.getPassword())
+//                .roles(usuario.Rol.getNombreRol())
+//                .disabled((usuario.getEstatus() == 0) ? true : false)
+//                .build();
+//    }
+        return new CustomUserDetails(
+                usuario.getUsername(),
+                usuario.getPassword(),
+                usuario.getEstatus() != 0,
+                AuthorityUtils.createAuthorityList("ROLE_" + usuario.Rol.getNombreRol().trim()),
+                usuario.getIdUsuario() 
+        );
+    }
+    }
